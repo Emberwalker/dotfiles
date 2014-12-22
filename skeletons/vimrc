@@ -1,0 +1,2 @@
+" Import master vimrc
+source ~/dotfiles/vimrc
