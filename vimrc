@@ -30,7 +30,7 @@ filetype plugin indent on    " required
 " COLOURS
 syntax enable
 set background=dark
-colorscheme solarized
+silent! colorscheme solarized
 
 " Airline
 let g:airline#extensions#tabline#enabled = 1

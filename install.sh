@@ -35,6 +35,13 @@ ln -v -s "`pwd`/virtualenvs/postactivate" "$HOME/.virtualenvs/postactivate"
 # Run updaters
 echo ">> Updating where possible..."
 
+which git > /dev/null 2>&1
+if [[ $? == 0 ]]; then
+  echo "    >> \`git clone https://github.com/gmarik/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim\`"
+  mkdir -p "$HOME/.vim/bundle" > /dev/null 2>&1
+  git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim > /dev/null 2>&1
+fi
+
 which vim > /dev/null 2>&1
 if [[ $? == 0 ]]; then
   echo "    >> \`vim +PluginUpdate +qall\`"
