@@ -22,6 +22,7 @@ Plugin 'tpope/vim-sensible'                " Sensible defaults
 Plugin 'majutsushi/tagbar'                 " Outline view
 Plugin 'altercation/vim-colors-solarized'  " Purdy colours
 Plugin 'bling/vim-airline'                 " AIRLINE!
+Plugin 'Valloric/YouCompleteMe'            " Autocompletion
 
 " End of plugins
 call vundle#end()            " required
@@ -81,15 +82,11 @@ set smartcase                             " Enable case sensitive searching when
 " Indent controls
 set tabstop=4      " 4 column literal tabs
 set expandtab      " Spaces, not tabs
-set shiftwidth=2   " 2 space shifts
+set shiftwidth=4   " 4 space shifts
 set softtabstop=4  " 4 space tabs
 set smarttab       " Guess indentation from earlier part of line
 
 " Death to the arrow keys! (Insert/Command mode)
-inoremap  <Up>     <NOP>
-inoremap  <Down>   <NOP>
-inoremap  <Left>   <NOP>
-inoremap  <Right>  <NOP>
 noremap   <Up>     <NOP>
 noremap   <Down>   <NOP>
 noremap   <Left>   <NOP>
