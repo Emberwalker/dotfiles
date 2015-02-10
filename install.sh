@@ -20,6 +20,14 @@ if [[ -f "$HOME/.vimrc" ]]; then
   mv -v "$HOME/.vimrc" "$HOME/.vimrc.old"
 fi
 
+if [[ -f "$HOME/.tmux.conf" ]]; then
+  mv -v "$HOME/.tmux.conf" "$HOME/.tmux.conf.old"
+fi
+
+if [[ -f "$HOME/.tmux-powerlinerc" ]]; then
+  mv -v "$HOME/.tmux-powerlinerc" "$HOME/.tmux-powerlinerc.old"
+fi
+
 if [[ -d "$HOME/.virtualenvs" ]]; then
   rm -rf "$HOME/.virtualenvs.old" 2> /dev/null
   mv -v "$HOME/.virtualenvs" "$HOME/.virtualenvs.old"
@@ -29,6 +37,8 @@ fi
 echo ">> Installing skeletons..."
 cp -v skeletons/vimrc "$HOME/.vimrc"
 cp -v skeletons/zshrc "$HOME/.zshrc"
+cp -v skeletons/tmuxrc "$HOME/.tmux.conf"
+cp -v skeletons/tmux-powerlinerc "$HOME/.tmux-powerlinerc"
 mkdir "$HOME/.virtualenvs"
 ln -v -s "`pwd`/virtualenvs/postactivate" "$HOME/.virtualenvs/postactivate"
 
