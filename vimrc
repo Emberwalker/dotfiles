@@ -4,6 +4,8 @@
 " Based on the vimrc files of KitB and neanias.
 " 
 
+" vim: set ts=8 sw=4 expandtab
+
 " Vundle
 set nocompatible     " be iMproved, required
 filetype off         " required
@@ -16,13 +18,17 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
 " GitHub plugins
-Plugin 'tpope/vim-fugitive'                " Git support
-Plugin 'tpope/vim-eunuch'                  " UNIX utils (SudoWrite/SudoEdit)
-Plugin 'tpope/vim-sensible'                " Sensible defaults
-Plugin 'majutsushi/tagbar'                 " Outline view
-Plugin 'altercation/vim-colors-solarized'  " Purdy colours
-Plugin 'bling/vim-airline'                 " AIRLINE!
-Plugin 'Valloric/YouCompleteMe'            " Autocompletion
+Plugin 'tpope/vim-fugitive'                 " Git support
+Plugin 'tpope/vim-eunuch'                   " UNIX utils (SudoWrite/SudoEdit)
+Plugin 'tpope/vim-sensible'                 " Sensible defaults
+Plugin 'majutsushi/tagbar'                  " Outline view
+Plugin 'altercation/vim-colors-solarized'   " Purdy colours
+Plugin 'bling/vim-airline'                  " AIRLINE!
+Plugin 'Valloric/YouCompleteMe'             " Autocompletion
+Plugin 'scrooloose/syntastic'               " Syntax checking
+
+" Wonky/non-GitHub plugins
+Plugin 'https://github.com/bitc/vim-hdevtools.git'  " Haskell hdevtools support
 
 " End of plugins
 call vundle#end()            " required
@@ -52,7 +58,7 @@ noremap <C-l> <C-w>l
 map <Leader>t :TagbarToggle<CR>           " Tagbar
 map <Leader>x :noh<CR>                    " Clear search highlights
 
-" Set commands
+" Set/Let commands
 set autoindent                            " Self-explanatory
 set backspace=indent,eol,start            " Bksp behaviour
 set backupdir=~/.vimbackup,.,/tmp         " Redirect backup files
@@ -79,12 +85,27 @@ set undofile                              " Store undo in files
 set wildmenu                              " Menu on statusbar for command autocomplete
 set smartcase                             " Enable case sensitive searching when first char is capitalised
 
+" Syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 " Indent controls
 set tabstop=4      " 4 column literal tabs
 set expandtab      " Spaces, not tabs
 set shiftwidth=4   " 4 space shifts
 set softtabstop=4  " 4 space tabs
 set smarttab       " Guess indentation from earlier part of line
+
+" AU shortcuts
+" Haskell
+au FileType haskell nnoremap <buffer> <F1> :HdevtoolsType<CR>
+au FileType haskell nnoremap <buffer> <silent> <F2> :HdevtoolsClear<CR>
+au FileType haskell nnoremap <buffer> <F3> :!ghci %<CR>
 
 " Death to the arrow keys! (Insert/Command mode)
 noremap   <Up>     <NOP>
@@ -107,4 +128,5 @@ let g:tagbar_type_markdown = {
     \ },
     \ 'sort': 0,
 \ }
+
 
