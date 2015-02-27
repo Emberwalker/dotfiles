@@ -14,7 +14,7 @@ compinit
 
 # PS1
 autoload -U colors && colors
-export PROMPT="%{$fg_bold[red]%}%m ⤏  %~ %{%(!.$fg[green].$fg_bold[red])%}>> %{$reset_color%b%}"
+export PROMPT="%{$fg_bold[red]%}%m :: %~ %{%(!.$fg[green].$fg_bold[red])%}>> %{$reset_color%b%}"
 export RPROMPT=""
 
 alias emacs="emacs -nw"
