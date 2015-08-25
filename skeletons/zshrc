@@ -7,5 +7,11 @@ source $HOME/dotfiles/zshrc
 #export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 #source /usr/bin/virtualenvwrapper_lazy.sh
 
+# thefuck support (https://github.com/nvbn/thefuck)
+# Uncomment after install.
+#eval "$(thefuck --alias)"
+#eval "$(thefuck --alias arse)"
+#eval "$(thefuck --alias shit)"
+
 # Machine-specific
 # Add anything specific to this machine here.
