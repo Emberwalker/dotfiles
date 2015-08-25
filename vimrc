@@ -129,4 +129,5 @@ let g:tagbar_type_markdown = {
     \ 'sort': 0,
 \ }
 
-
+" Fix vim behaviour in non-POSIX shells (i.e. fish) by forcing bash internally.
+set shell=bash
