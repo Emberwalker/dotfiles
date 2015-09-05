@@ -26,6 +26,8 @@ NeoBundle 'bling/vim-airline'                  " AIRLINE!
 NeoBundle 'scrooloose/syntastic'               " Syntax checking
 NeoBundle 'Shougo/vimshell.vim'                " A shell, my kingdom for a shell!
 NeoBundle 'Shougo/unite.vim'                   " All-rounder plugin. Not actually in any hero movies.
+NeoBundle 'Shougo/vimfiler.vim'                " File explorer ('filer')
+
 
 " Advanced plugins
 " vimproc.vim: Allows some Vim plugins to go NYOOOEEEERM! (go faster by running background jobs)
