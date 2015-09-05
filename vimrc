@@ -6,38 +6,64 @@
 
 " vim: set ts=8 sw=4 expandtab
 
-" Vundle
+" NeoBundle
 set nocompatible     " be iMproved, required
 filetype off         " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" set the runtime path to include NeoBundle and initialize
+set rtp+=~/.vim/bundle/neobundle.vim
+call neobundle#begin(expand('~/.vim/bundle/'))
 
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+" let NeoBundle manage itself; required
+NeoBundleFetch 'Shougo/neobundle.vim'
 
 " GitHub plugins
-Plugin 'tpope/vim-fugitive'                 " Git support
-Plugin 'tpope/vim-eunuch'                   " UNIX utils (SudoWrite/SudoEdit)
-Plugin 'tpope/vim-sensible'                 " Sensible defaults
-Plugin 'majutsushi/tagbar'                  " Outline view
-Plugin 'altercation/vim-colors-solarized'   " Purdy colours
-Plugin 'bling/vim-airline'                  " AIRLINE!
-Plugin 'Valloric/YouCompleteMe'             " Autocompletion
-Plugin 'scrooloose/syntastic'               " Syntax checking
+NeoBundle 'tpope/vim-fugitive'                 " Git support
+NeoBundle 'tpope/vim-eunuch'                   " UNIX utils (SudoWrite/SudoEdit)
+NeoBundle 'tpope/vim-sensible'                 " Sensible defaults
+NeoBundle 'majutsushi/tagbar'                  " Outline view
+NeoBundle 'bling/vim-airline'                  " AIRLINE!
+NeoBundle 'scrooloose/syntastic'               " Syntax checking
+NeoBundle 'Shougo/vimshell.vim'                " A shell, my kingdom for a shell!
+NeoBundle 'Shougo/unite.vim'                   " All-rounder plugin. Not actually in any hero movies.
+
+" Advanced plugins
+" vimproc.vim: Allows some Vim plugins to go NYOOOEEEERM! (go faster by running background jobs)
+NeoBundle 'Shougo/vimproc.vim', {
+            \ 'build' : {
+            \     'windows' : 'tools\\update-dll-mingw',
+            \     'cygwin' : 'make -f make_cygwin.mak',
+            \     'mac' : 'make -f make_mac.mak',
+            \     'linux' : 'make',
+            \     'unix' : 'gmake',
+            \    },
+            \ }
+" YouCompleteMe: Autocompletion for C-family languages + others
+NeoBundle 'Valloric/YouCompleteMe', {
+            \ 'build' : {
+            \   'mac' : 'python install.py --clang-completer --gocode-completer',
+            \   'linux' : 'python install.py --clang-completer --gocode-completer',
+            \   }
+            \ }
+
+" Colours, all the colours
+NeoBundle 'altercation/vim-colors-solarized'   " The classic
+NeoBundle 'jordwalke/flatlandia'               " Mostly intended for MacVim, might be good all round
+NeoBundle 'CruizeMissile/Revolution.vim'       " Orange and rusty
+NeoBundle 'duythinht/inori'                    " Lower contrast, orangey
+NeoBundle 'xero/sourcerer.vim'                 " Muted, simple with orange highlights
 
 " Wonky/non-GitHub plugins
-Plugin 'https://github.com/bitc/vim-hdevtools.git'  " Haskell hdevtools support
+"NeoBundle 'https://github.com/bitc/vim-hdevtools.git'  " Haskell hdevtools support
 
 " End of plugins
-call vundle#end()            " required
+call neobundle#end()
 filetype plugin indent on    " required
 
 " COLOURS
 syntax enable
 set background=dark
-silent! colorscheme solarized
+set guifont=Hack:h11
 
 " Airline
 let g:airline#extensions#tabline#enabled = 1
@@ -131,3 +157,6 @@ let g:tagbar_type_markdown = {
 
 " Fix vim behaviour in non-POSIX shells (i.e. fish) by forcing bash internally.
 set shell=bash
+
+" Bundle install reminder
+NeoBundleCheck

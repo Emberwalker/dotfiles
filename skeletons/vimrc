@@ -1,2 +1,5 @@
 " Import master vimrc
 source ~/dotfiles/vimrc
+
+" Set colorscheme
+silent! colorscheme solarized

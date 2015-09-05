@@ -47,15 +47,15 @@ echo ">> Updating where possible..."
 
 which git > /dev/null 2>&1
 if [[ $? == 0 ]]; then
-  echo "    >> \`git clone https://github.com/gmarik/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim\`"
+  echo "    >> \`git clone https://github.com/Shougo/neobundle.vim.git $HOME/.vim/bundle/neobundle.vim\`"
   mkdir -p "$HOME/.vim/bundle" > /dev/null 2>&1
-  git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim > /dev/null 2>&1
+  git clone https://github.com/Shougo/neobundle.vim.git ~/.vim/bundle/neobundle.vim > /dev/null 2>&1
 fi
 
 which vim > /dev/null 2>&1
 if [[ $? == 0 ]]; then
   echo "    >> \`vim +PluginUpdate +qall\`"
-  vim +PluginUpdate +qall
+  vim +NeoBundleInstall +qall
 fi
 
 echo ">> Done!"
