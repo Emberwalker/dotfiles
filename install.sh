@@ -35,27 +35,27 @@ fi
 
 # Install skeletons
 echo ">> Installing skeletons..."
-cp -v skeletons/vimrc "$HOME/.vimrc"
 cp -v skeletons/zshrc "$HOME/.zshrc"
 cp -v skeletons/tmuxrc "$HOME/.tmux.conf"
 cp -v skeletons/tmux-powerlinerc "$HOME/.tmux-powerlinerc"
 mkdir "$HOME/.virtualenvs"
 ln -v -s "`pwd`/virtualenvs/postactivate" "$HOME/.virtualenvs/postactivate"
 
-# Run updaters
-echo ">> Updating where possible..."
-
+# Vimvimvim...
+echo ">> Trying Vim template..."
 which git > /dev/null 2>&1
 if [[ $? == 0 ]]; then
-  echo "    >> \`git clone https://github.com/Shougo/neobundle.vim.git $HOME/.vim/bundle/neobundle.vim\`"
-  mkdir -p "$HOME/.vim/bundle" > /dev/null 2>&1
-  git clone https://github.com/Shougo/neobundle.vim.git ~/.vim/bundle/neobundle.vim > /dev/null 2>&1
-fi
-
-which vim > /dev/null 2>&1
-if [[ $? == 0 ]]; then
-  echo "    >> \`vim +PluginUpdate +qall\`"
-  vim +NeoBundleInstall +qall
+  echo "    >> Archiving old .vim..."
+  if [[ -d "$HOME/.vim" ]]; then
+    rm -rf "$HOME/.vim.old" 2> /dev/null
+    mv -v "$HOME/.vim" "$HOME/.vim.old"
+  fi
+  echo "    >> \`git clone\`..."
+  git clone https://github.com/Emberwalker/dotvim.git ~/.vim > /dev/null 2>&1
+  echo "    >> Copying vimrc shim..."
+  cp -v skeletons/vimrc "$HOME/.vimrc"
+else
+  echo "    >> Can't find a copy of git, skipping .vim prep."
 fi
 
 echo ">> Done!"
