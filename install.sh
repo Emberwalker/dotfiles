@@ -52,7 +52,8 @@ if [[ $? == 0 ]]; then
   fi
   echo "    >> \`git clone\`..."
   git clone https://github.com/Emberwalker/dotvim.git ~/.vim && \
-    git submodule init && git submodule update
+    cd ~ && git submodule init && git submodule update
+  cd ~/dotfiles
   echo "    >> Copying vimrc shim..."
   cp -v skeletons/vimrc "$HOME/.vimrc"
 else
