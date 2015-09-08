@@ -51,9 +51,7 @@ if [[ $? == 0 ]]; then
     mv -v "$HOME/.vim" "$HOME/.vim.old"
   fi
   echo "    >> \`git clone\`..."
-  git clone https://github.com/Emberwalker/dotvim.git ~/.vim && \
-    cd ~ && git submodule init && git submodule update
-  cd ~/dotfiles
+  git clone --recursive https://github.com/Emberwalker/dotvim.git ~/.vim
   echo "    >> Copying vimrc shim..."
   cp -v skeletons/vimrc "$HOME/.vimrc"
 else
