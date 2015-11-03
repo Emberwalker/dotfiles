@@ -27,3 +27,14 @@ alias _="sudo"
 # Virtualenv Wrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/dev/python
+
+# GPG2
+if hash gpg2-agent 2> /dev/null; then
+  GPG_AGENT="gpg2-agent"
+  alias gpg="gpg2" # Sod you old distros
+elif hash gpg-agent 2> /dev/null; then
+  GPG_AGENT="gpg-agent"
+else
+  echo "warn: unable to locate gpg(2)-agent -- is GPG installed?"
+fi
+

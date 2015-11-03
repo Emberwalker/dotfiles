@@ -58,4 +58,19 @@ else
   echo "    >> Can't find a copy of git, skipping .vim prep."
 fi
 
+# GPG2
+# First check if we need 'gpg2' prefix or not.
+if hash gpg2-agent 2>/dev/null; then
+  GPG_AGENT="gpg2-agent"
+  GPG2_PREFIX=true
+else
+  GPG_AGENT="gpg-agent"
+  GPG2_PREFIX=false
+fi
+
+# Setup dirs and link configs
+mkdir "$HOME/.gnupg"
+ln -s "$HOME/dotfiles/gpg.conf" "$HOME/.gnupg/gpg.conf"
+ln -s "$HOME/dotfiles/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
+
 echo ">> Done!"
