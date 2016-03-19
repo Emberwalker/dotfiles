@@ -10,6 +10,56 @@ if [[ "`pwd`" != "$HOME/dotfiles" ]]; then
   exit -1
 fi
 
+# Dependencies
+## Ruby (for brew)
+if hash ruby 2>/dev/null; then
+  echo ">> Found Ruby interpreter."
+  HAS_RUBY=1
+else
+  echo "!! >> Couldn't find a Ruby interpreter."
+  HAS_RUBY=0
+fi
+
+## home/linuxbrew
+if [[ $HAS_RUBY == 1 ]]; then
+  # In case PATH is missing bits
+  if [[ -d "$HOME/.linuxbrew" ]]; then
+    export PATH="$HOME/.linuxbrew/bin:$PATH"
+  fi
+  if hash brew 2>/dev/null; then
+    echo ">> Found Homebrew/Linuxbrew."
+    HOMEBREW=1
+  else
+    if [[ "$OSTYPE" == "linux"* ]]; then
+      echo ">> Installing Linuxbrew..."
+      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/linuxbrew/go/install)"
+      export PATH="$HOME/.linuxbrew/bin:$PATH"
+      HOMEBREW=1
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+      echo ">> Installing Homebrew..."
+      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+      export PATH="/usr/local/bin:$PATH"
+      HOMEBREW=1
+    else
+      echo "!! >> Unknown OS type: $OSTYPE - unable to acquire Homebrew."
+      HOMEBREW=0
+    fi
+  fi
+fi
+
+# Homebrew installations
+if [[ $HOMEBREW == 1 ]]; then
+  echo ">> Installing missing Homebrew packages..."
+  if !([[ -f "$(brew --prefix)/share/antigen.zsh" ]]); then
+    echo "    >> Installing Antigen..."
+    brew install antigen
+  fi
+  if !(hash thefuck 2>/dev/null); then
+    echo "    >> Installing thefuck..."
+    brew install thefuck
+  fi
+fi
+
 # Archive old crap
 echo ">> Archiving old scripts (if exists)..."
 if [[ -f "$HOME/.zshrc" ]]; then
@@ -69,8 +119,8 @@ else
 fi
 
 # Setup dirs and link configs
-mkdir "$HOME/.gnupg"
-ln -s "$HOME/dotfiles/gpg.conf" "$HOME/.gnupg/gpg.conf"
-ln -s "$HOME/dotfiles/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf"
+mkdir "$HOME/.gnupg" 2>/dev/null
+ln -s "$HOME/dotfiles/gpg.conf" "$HOME/.gnupg/gpg.conf" 2>/dev/null
+ln -s "$HOME/dotfiles/gpg-agent.conf" "$HOME/.gnupg/gpg-agent.conf" 2>/dev/null
 
 echo ">> Done!"
