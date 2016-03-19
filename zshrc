@@ -37,6 +37,13 @@ if [[ -d "$HOME/bin" ]]; then export PATH="$HOME/bin:$PATH"; fi
 if [[ $(ps aux | grep unity-panel | wc -l) -gt 1 ]] && [[ -f "/usr/share/java/jayatanaag.jar" ]]; then
   export JAVA_TOOL_OPTIONS="-javaagent:/usr/share/java/jayatanaag.jar $JAVA_TOOL_OPTIONS"
 fi
+## Clang/LLVM
+if hash clang 2>/dev/null; then
+  export CC="clang"
+  export CXX="clang++"
+  export HOMEBREW_CC="clang"
+  export HOMEBREW_CXX="clang++"
+fi
 
 # thefuck
 if hash thefuck 2>/dev/null; then
