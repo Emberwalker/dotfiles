@@ -20,8 +20,16 @@ else
   HAS_RUBY=0
 fi
 
+if hash curl 2>/dev/null; then
+  echo ">> Found cURL."
+  HAS_CURL=1
+else
+  echo "!! >> Couldn't find cURL."
+  HAS_CURL=0
+fi
+
 ## home/linuxbrew
-if [[ $HAS_RUBY == 1 ]]; then
+if ([ $HAS_RUBY == 1 ] && [ $HAS_CURL == 1 ]); then
   # In case PATH is missing bits
   if [[ -d "$HOME/.linuxbrew" ]]; then
     export PATH="$HOME/.linuxbrew/bin:$PATH"
