@@ -58,6 +58,10 @@ fi
 # Homebrew installations
 if [[ $HOMEBREW == 1 ]]; then
   echo ">> Installing missing Homebrew packages..."
+  if !(hash git 2>/dev/null); then
+    echo "Installing git..."
+    brew install git
+  fi
   if !([[ -f "$(brew --prefix)/share/antigen.zsh" ]]); then
     echo "    >> Installing Antigen..."
     brew install antigen
