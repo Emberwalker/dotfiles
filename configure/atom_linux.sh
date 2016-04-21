@@ -32,6 +32,7 @@ if apt-cache show atom 2>&1 >/dev/null; then
   ATOM_VERSION="$(dpkg-query --showformat='${Version}' --show atom)"
 else
   ATOM_INSTALLED=0
+  ATOM_VERSION=-1
 fi
 
 echo ">> Fetching latest Atom release information..."
