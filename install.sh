@@ -20,12 +20,22 @@ else
   HAS_RUBY=0
 fi
 
+## cURL for Homebrew install
 if hash curl 2>/dev/null; then
   echo ">> Found cURL."
   HAS_CURL=1
 else
   echo "!! >> Couldn't find cURL."
   HAS_CURL=0
+fi
+
+## apm for Atom packages
+if hash apm 2>/dev/null; then
+  echo ">> Found Atom Package Manager."
+  HAS_APM=1
+else
+  echo "!! >> Couldn't find apm; is Atom installed?"
+  HAS_APM=0
 fi
 
 ## home/linuxbrew
@@ -95,6 +105,11 @@ if [[ -d "$HOME/.virtualenvs" ]]; then
   mv -v "$HOME/.virtualenvs" "$HOME/.virtualenvs.old"
 fi
 
+if [[ -d "$HOME/.atom" ]]; then
+  rm -rf "$HOME/.atom.old" 2> /dev/null
+  mv -v "$HOME/.atom" "$HOME/.atom.old"
+fi
+
 # Install skeletons
 echo ">> Installing skeletons..."
 cp -v skeletons/zshrc "$HOME/.zshrc"
@@ -118,6 +133,14 @@ if [[ $? == 0 ]]; then
   cp -v skeletons/vimrc "$HOME/.vimrc"
 else
   echo "    >> Can't find a copy of git, skipping .vim prep."
+fi
+
+# Atom
+echo ">> Installing Atom configs..."
+ln -v -s "$HOME/dotfiles/atom/*" "$HOME/.atom/"
+if [[ $HAS_APM == 1 ]]; then
+  echo ">> Installing Atom packages (this may take a while)..."
+  sh "$HOME/dotfiles/configure/atom.sh"
 fi
 
 # GPG2
