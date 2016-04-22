@@ -10,4 +10,4 @@ if !(hash apm 2>/dev/null); then
   exit -1
 fi
 
-apm install "$@" --color --compatible --packages-file "$HOME/dotfiles/atom/packages"
+apm install "$@" --color --compatible --packages-file "$HOME/dotfiles/atom/pkgs"
