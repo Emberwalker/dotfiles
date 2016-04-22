@@ -24,6 +24,10 @@
       linter: true
       linterDecorationsZIndex: 0
   "one-dark-ui":
+    fontSize: 10
     layoutMode: "Compact"
   welcome:
     showOnStartup: false
+".Kotlin.source":
+  editor:
+    preferredLineLength: 120
