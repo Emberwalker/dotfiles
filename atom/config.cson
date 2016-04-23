@@ -1,4 +1,8 @@
 "*":
+  "autocomplete-plus":
+    fileBlacklist: [
+      "*.md"
+    ]
   core:
     themes: [
       "one-dark-ui"
