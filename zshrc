@@ -29,7 +29,9 @@ if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 
 # Sensible default env vars
-export EDITOR=vim
+if hash vim 2>/dev/null; then
+  export EDITOR="$(which vim)"
+fi
 if hash go 2>/dev/null; then
   export GOPATH="$HOME/go"
   export PATH="$GOPATH/bin:$PATH"

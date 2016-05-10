@@ -30,6 +30,8 @@
   "one-dark-ui":
     fontSize: 10
     layoutMode: "Compact"
+  "tree-view":
+    hideVcsIgnoredFiles: true
   welcome:
     showOnStartup: false
 ".Kotlin.source":
