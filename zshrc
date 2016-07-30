@@ -5,6 +5,12 @@ SAVEHIST=250
 setopt appendhistory autocd extendedglob
 bindkey -e
 # End of lines configured by zsh-newuser-install
+
+# Add zsh completion from home/linuxbrew
+if hash brew 2>/dev/null; then
+  fpath=("$(brew --prefix)/share/antigen.zsh" $fpath)
+fi
+
 # The following lines were added by compinstall
 zstyle :compinstall filename "$HOME/.zshrc"
 
