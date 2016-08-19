@@ -1,0 +1,25 @@
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- clean: ['~', '~/.config', '~/.virtualenvs']
+
+- link:
+    ~/.antigen.zsh: .antigen.zsh
+    ~/.zshrc: zshrc
+    ~/.tmux.conf: tmuxrc
+    ~/.vimrc: vimrc
+    ~/.gnupg/gpg.conf: gpg.conf
+    ~/.gnupg/gpg-agent.conf: gpg-agent.conf
+    ~/.virtualenvs/postactivate: virtualenvs/postactivate
+    ~/.atom/config.cson: atom/config.cson
+    ~/.atom/init.coffee: atom/init.coffee
+    ~/.atom/keymap.cson: atom/keymap.cson
+    ~/.atom/pkgs: atom/pkgs
+    ~/.atom/snippets.cson: atom/snippets.cson
+    ~/.atom/styles.less: atom/styles.less
+
+- shell:
+    - bash .scripts/clone_vim.sh
+    - bash .scripts/atom_pkgs.sh
