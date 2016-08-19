@@ -69,10 +69,10 @@ else
 fi
 
 # Load antigen (plugin management)
-fpath=("~/.antigen.zsh" $fpath)
-source "~/.antigen.zsh"
+fpath=("$HOME/.antigen.zsh" $fpath)
+source "$HOME/.antigen.zsh"
 antigen use oh-my-zsh
-antigen bundles < "$HOME/dotfiles/zsh/bundles"
+antigen bundles < "$HOME/.zsh_bundles"
 antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
 antigen apply
 

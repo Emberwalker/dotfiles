@@ -8,6 +8,7 @@
 - link:
     ~/.antigen.zsh: .antigen.zsh
     ~/.zshrc: zshrc
+    ~/.zsh_packages: zsh_packages
     ~/.tmux.conf: tmuxrc
     ~/.vimrc: vimrc
     ~/.gnupg/gpg.conf: gpg.conf
