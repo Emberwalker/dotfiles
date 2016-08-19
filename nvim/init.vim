@@ -47,6 +47,10 @@ if $SHELL =~ '/fish$'
   set shell=bash
 endif
 
+" line length marker
+set colorcolumn=120
+highlight ColorColumn ctermbg=235
+
 " whitespace
 set backspace=indent,eol,start                      "allow backspacing everything in insert mode
 set autoindent                                      "automatically indent to match adjacent lines
