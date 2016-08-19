@@ -31,6 +31,7 @@ alias emcs="emacs -nw"
 alias em="emacs -nw"
 alias vi="vim"
 alias _="sudo"
+alias ls="ls -h"
 if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 
@@ -100,5 +101,7 @@ export BULLETTRAIN_EXEC_TIME_SHOW=true
 
 # System banner (if present)
 if [[ -f "$HOME/.banner" ]]; then
-  cat "$HOME/.banner" | sed -e "s/@RELEASE@/$(lsb_release -ds)/" -e "s/@KERNEL@/$(cat /proc/version_signature)/"
+  RELEASE=$(lsb_release -ds 2>/dev/null || printf "unknown")
+  KERNEL=$(cat /proc/version_signature 2>/dev/null || cat /proc/version 2>/dev/null || printf "unknown")
+  cat "$HOME/.banner" | sed -e "s/@RELEASE@/$RELEASE/" -e "s/@KERNEL@/$KERNEL/"
 fi
