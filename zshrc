@@ -80,9 +80,10 @@ antigen apply
 alias emacs="emacs -nw"
 alias emcs="emacs -nw"
 alias em="emacs -nw"
-alias vi="vim"
 alias _="sudo"
 alias ls="ls --color=tty -h"
+if hash vim 2>/dev/null; then alias vi="vim"; fi
+if hash nvim 2>/dev/null; then alias nv="nvim"; fi
 if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 

@@ -2,6 +2,7 @@
     link:
       create: true
       relink: true
+      force: true
 
 - clean: ['~', '~/.config', '~/.virtualenvs']
 
@@ -11,6 +12,9 @@
     ~/.zsh_packages: zsh_packages
     ~/.tmux.conf: tmuxrc
     ~/.vimrc: vimrc
+    ~/.config/nvim/init.vim: nvim/init.vim
+    ~/.config/nvim/plugins.vim: nvim/plugins.vim
+    ~/.config/nvim/autoload/plug.vim: nvim/.plug.vim
     ~/.gnupg/gpg.conf: gpg.conf
     ~/.gnupg/gpg-agent.conf: gpg-agent.conf
     ~/.virtualenvs/postactivate: virtualenvs/postactivate
