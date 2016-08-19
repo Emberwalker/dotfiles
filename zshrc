@@ -25,16 +25,6 @@ if [[ -d "$HOME/.linuxbrew" ]]; then
   export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
 fi
 
-# Standard-issue aliases
-alias emacs="emacs -nw"
-alias emcs="emacs -nw"
-alias em="emacs -nw"
-alias vi="vim"
-alias _="sudo"
-alias ls="ls -h"
-if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
-if hash firejail 2>/dev/null; then alias jail="firejail"; fi
-
 # Sensible default env vars
 if hash vim 2>/dev/null; then
   export EDITOR="$(which vim)"
@@ -86,6 +76,16 @@ if hash brew 2>/dev/null && [[ -f "$(brew --prefix)/share/antigen.zsh" ]]; then
   antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
   antigen apply
 fi
+
+# Standard-issue aliases
+alias emacs="emacs -nw"
+alias emcs="emacs -nw"
+alias em="emacs -nw"
+alias vi="vim"
+alias _="sudo"
+alias ls="ls --color=tty -h"
+if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
+if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 
 # Theme customisation
 export BULLETTRAIN_PROMPT_CHAR="λ"
