@@ -72,7 +72,7 @@ fi
 fpath=("$HOME/.antigen.zsh" $fpath)
 source "$HOME/.antigen.zsh"
 antigen use oh-my-zsh
-antigen bundles < "$HOME/.zsh_bundles"
+antigen bundles < "$HOME/.zsh_packages"
 antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
 antigen apply
 
