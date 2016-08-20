@@ -12,3 +12,8 @@ cd "${BASEDIR}"
 git submodule update --init --recursive "${DOTBOT_DIR}"
 
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+
+echo
+echo ">> Psst! You should probably clone dotfiles_local if you'll be using this machine often."
+echo "  >> git@github.com:Emberwalker/dotfiles_local.git  //  https://github.com/Emberwalker/dotfiles_local.git"
+echo
