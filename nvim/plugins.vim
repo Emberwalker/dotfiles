@@ -6,6 +6,9 @@
 call EnsureExists('~/.local/share/nvim/plugged')
 call plug#begin('~/.local/share/nvim/plugged')
 
+" try load local plugin config
+if filereadable(expand("~/.nvimplugs")) | source ~/.nvimplugs | endif
+
 " essentials {{{
 Plug 'vim-airline/vim-airline' "{{{
   let g:airline_theme = 'murmur'
@@ -91,9 +94,6 @@ Plug 'DrSpatula/vim-buddy'
 "Plug 'sjl/badwolf'
 "Plug 'jordwalke/flatlandia'
 "}}}
-
-" try load local plugin config
-if filereadable(expand("~/.nvimplugs")) | source ~/.nvimplugs' | endif
 
 " fin
 call plug#end()

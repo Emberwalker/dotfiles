@@ -30,6 +30,9 @@ fi
 if hash vim 2>/dev/null; then
   export EDITOR="$(which vim)"
 fi
+if hash nvim 2>/dev/null; then
+  export EDITOR="$(which nvim)"
+fi
 if hash go 2>/dev/null; then
   export GOPATH="$HOME/go"
   export PATH="$GOPATH/bin:$PATH"
@@ -83,8 +86,13 @@ alias em="emacs -nw"
 alias _="sudo"
 alias ls="ls --color=tty -h"
 if hash vim 2>/dev/null; then alias vi="vim"; fi
-if hash nvim 2>/dev/null; then alias nv="nvim"; fi
+if hash nvim 2>/dev/null; then
+  alias nv="nvim"
+  alias vi="nvim"
+  alias vim="nvim"
+fi
 if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
+if hash pacman 2>/dev/null; then alias pacman="sudo pacman"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 
 # Theme customisation
@@ -104,4 +112,9 @@ if [[ -f "$HOME/.banner" ]]; then
   RELEASE=$(lsb_release -ds 2>/dev/null || printf "unknown")
   KERNEL=$(cat /proc/version_signature 2>/dev/null || cat /proc/version 2>/dev/null || printf "unknown")
   cat "$HOME/.banner" | sed -e "s/@RELEASE@/$RELEASE/" -e "s/@KERNEL@/$KERNEL/"
+fi
+
+# local profile
+if [[ -f "$HOME/.zshrc.local" ]]; then
+  source "$HOME/.zshrc.local"
 fi
