@@ -1,3 +1,11 @@
+##############################################################################################
+#                                                                                            #
+#                          This file is part of the global dotfiles.                         #
+#                         Make host-specific changes in .zshrc.local!                        #
+#  If that file does not exist, clone dotfiles_local and checkout the branch for this host.  #
+#                                                                                            #
+##############################################################################################
+
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.zsh_history
 HISTSIZE=250

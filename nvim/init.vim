@@ -1,7 +1,8 @@
 "
-" Neovim init file
+" Global Neovim init file
 " Arkan <arkan@drakon.io>
 "
+" Do NOT make host-specific changes here! See dotfiles_local for adding host-specific configuration.
 " Large portions salvaged from old .vim (based on the bling config)
 "
 
@@ -147,6 +148,11 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
+"}}}
+
+" autocmds {{{
+" trim trailing whitespace
+autocmd BufWritePre * %s/\s\+$//e
 "}}}
 
 " site config

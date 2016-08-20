@@ -2,12 +2,44 @@
 " Neovim Plugin Install/Config
 " Arkan <arkan@drakon.io>
 "
+" Do NOT make host-specific changes here! See dotfiles_local for host-specific configuration.
+"
 
 call EnsureExists('~/.local/share/nvim/plugged')
 call plug#begin('~/.local/share/nvim/plugged')
 
 " try load local plugin config
 if filereadable(expand("~/.nvimplugs")) | source ~/.nvimplugs | endif
+
+" load settings
+if exists('g:plugin_groups')
+  " overridden locally
+  let s:plugin_groups = g:plugin_groups
+else
+  " defaults
+  let s:plugin_groups = []
+  " JVM
+  "call add(s:plugin_groups, 'java')
+  "call add(s:plugin_groups, 'scala')
+  "call add(s:plugin_groups, 'kotlin')
+  " Dynamics
+  "call add(s:plugin_groups, 'python')
+  "call add(s:plugin_groups, 'ruby')
+  "call add(s:plugin_groups, 'javascript')
+  "call add(s:plugin_groups, 'typescript')
+  " System languages
+  call add(s:plugin_groups, 'c')
+  call add(s:plugin_groups, 'c++')
+  "call add(s:plugin_groups, 'go')
+  "call add(s:plugin_groups, 'rust')
+  " Functional
+  "call add(s:plugin_groups, 'haskell')
+  " documentation
+  call add(s:plugin_groups, 'markdown')
+  "call add(s:plugin_groups, 'restructured_text')
+  " other
+  call add(s:plugin_groups, 'autocomplete')
+endif
 
 " essentials {{{
 Plug 'vim-airline/vim-airline' "{{{
