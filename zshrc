@@ -92,7 +92,11 @@ alias emacs="emacs -nw"
 alias emcs="emacs -nw"
 alias em="emacs -nw"
 alias _="sudo"
-alias ls="ls --color=tty -h"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias ls="ls -h"
+else
+  alias ls="ls --color=tty -h"
+fi
 if hash vim 2>/dev/null; then alias vi="vim"; fi
 if hash nvim 2>/dev/null; then
   alias nv="nvim"
