@@ -18,6 +18,8 @@ if exists('g:plugin_groups')
 else
   " defaults
   let s:plugin_groups = []
+  " basics
+  call add(s:plugin_groups, 'autocomplete')
   " JVM
   "call add(s:plugin_groups, 'java')
   "call add(s:plugin_groups, 'scala')
@@ -37,8 +39,6 @@ else
   " documentation
   call add(s:plugin_groups, 'markdown')
   "call add(s:plugin_groups, 'restructured_text')
-  " other
-  call add(s:plugin_groups, 'autocomplete')
 endif
 
 " essentials {{{
@@ -126,6 +126,93 @@ Plug 'DrSpatula/vim-buddy'
 "Plug 'sjl/badwolf'
 "Plug 'jordwalke/flatlandia'
 "}}}
+
+if count(s:plugin_groups, 'autocomplete') "{{{
+  if has('python3')
+    let s:deoplete = 1
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'Shougo/neco-vim' " vimscript completion for deoplete
+    Plug 'Shougo/neoinclude.vim' " include completion
+  else
+    let s:deoplete = 0
+    echom("Python 3 isn't available; disabling deoplete! Fix with 'pip3 install neovim'")
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'java') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'scala') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'kotlin') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'python') "{{{
+  if s:deoplete
+    Plug 'zchee/deoplete-jedi'
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'ruby') "{{{
+  if s:deoplete
+    Plug 'fishbullet/deoplete-ruby'
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'javascript') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'typescript') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'c') "{{{
+  Plug 'vim-scripts/a.vim'  " alternate.vim
+  if s:deoplete && executable('clang')
+    Plug 'Rip-Rip/clang_complete'
+  elseif s:deoplete
+    echom("clang isn't available. Install it with your package manager or brew to enable C completion.")
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'c++') "{{{
+  if !count(s:plugin_groups, 'c')
+    echom("C plugins aren't enabled, but C++ plugins are! Fix your local nvimplugs configuration.")
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'go') "{{{
+  if s:deoplete && executable('gocode')
+    Plug 'zchee/deoplete-go', { 'do': 'make'}
+  elseif s:deoplete
+    echom("gocode isn't available. Install with 'go get -u github.com/nsf/gocode' to enable Go completion.")
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'rust') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'haskell') "{{{
+  if s:deoplete && executable('ghc-mod')
+    Plug 'eagletmt/neco-ghc'
+  elseif s:deoplete
+    echom("ghc-mod isn't available. Install it using cabal/stack.")
+  endif
+endif "}}}
+
+if count(s:plugin_groups, 'markdown') "{{{
+  " TODO
+endif "}}}
+
+if count(s:plugin_groups, 'restructured_text') "{{{
+  " TODO
+endif "}}}
 
 " fin
 call plug#end()
