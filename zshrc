@@ -14,12 +14,6 @@ setopt appendhistory autocd extendedglob
 bindkey -e
 # End of lines configured by zsh-newuser-install
 
-# Add zsh completion from home/linuxbrew
-#if hash brew 2>/dev/null; then
-#  fpath=("$(brew --prefix)/share/antigen.zsh" $fpath)
-#fi
-
-
 # The following lines were added by compinstall
 zstyle :compinstall filename "$HOME/.zshrc"
 
@@ -82,9 +76,11 @@ fi
 # Load antigen (plugin management)
 fpath=("$HOME/.antigen.zsh" $fpath)
 source "$HOME/.antigen.zsh"
+export DEFAULT_USER="arkan"
 antigen use oh-my-zsh
 antigen bundles < "$HOME/.zsh_packages"
-antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
+#antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
+antigen theme agnoster
 antigen apply
 
 # Standard-issue aliases
