@@ -28,6 +28,11 @@ if [[ -d "$HOME/.linuxbrew" ]]; then
   export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
 fi
 
+# Cargo
+if [[ -d "$HOME/.cargo/bin" ]]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 # Sensible default env vars
 if hash vim 2>/dev/null; then
   export EDITOR="$(which vim)"

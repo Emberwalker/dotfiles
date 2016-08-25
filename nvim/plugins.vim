@@ -130,7 +130,15 @@ Plug 'DrSpatula/vim-buddy'
 if count(s:plugin_groups, 'autocomplete') "{{{
   if has('python3')
     let s:deoplete = 1
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "{{{
+      " based on https://www.gregjs.com/vim/2016/configuring-the-deoplete-asynchronous-keyword-completion-plugin-with-tern-for-vim/
+      let g:deoplete#enable_at_startup = 1
+      if !exists('g:deoplete#omni#input_patterns')
+        let g:deoplete#omni#input_patterns = {}
+      endif
+      autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+      inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+    "}}}
     Plug 'Shougo/neco-vim' " vimscript completion for deoplete
     Plug 'Shougo/neoinclude.vim' " include completion
   else
@@ -195,7 +203,18 @@ if count(s:plugin_groups, 'go') "{{{
 endif "}}}
 
 if count(s:plugin_groups, 'rust') "{{{
-  " TODO
+  Plug 'rust-lang/rust.vim' "{{{
+    if executable('rustfmt')
+      let g:rustfmt_autosave = 1
+    else
+      echom("rustfmt isn't available. Install with 'cargo install rustfmt' to enable format on save for Rust files")
+    endif
+  "}}}
+  if s:deoplete && executable('racer')
+    Plug 'racer-rust/vim-racer'
+  elseif s:deoplete
+    echom("racer isn't available. Install with 'cargo install racer' to enable Rust completion.")
+  endif
 endif "}}}
 
 if count(s:plugin_groups, 'haskell') "{{{
