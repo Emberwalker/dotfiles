@@ -33,6 +33,11 @@ if [[ -d "$HOME/.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
 fi
 
+# Rust src
+if [[ -d "$HOME/src/rust" ]]; then
+  export RUST_SRC_PATH="$HOME/src/rust/src"
+fi
+
 # Sensible default env vars
 if hash vim 2>/dev/null; then
   export EDITOR="$(which vim)"

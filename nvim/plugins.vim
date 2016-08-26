@@ -1,3 +1,5 @@
+" vim: expandtab fdm=marker ts=2 sts=2 sw=2 fdl=0
+
 "
 " Neovim Plugin Install/Config
 " Arkan <arkan@drakon.io>
@@ -40,6 +42,11 @@ else
   call add(s:plugin_groups, 'markdown')
   "call add(s:plugin_groups, 'restructured_text')
 endif
+
+" are any JVM plugins enabled?
+let s:jvm_plugins = count(s:plugin_groups, 'java') ||
+      \count(s:plugin_groups, 'scala') ||
+      \count(s:plugin_groups, 'kotlin')
 
 " essentials {{{
 Plug 'vim-airline/vim-airline' "{{{
@@ -110,6 +117,21 @@ Plug 'airblade/vim-gitgutter'
 Plug 'mhinz/vim-startify'
 Plug 'kshenoy/vim-signature'
 Plug 'ryanoasis/vim-devicons'
+Plug 'Konfekt/FastFold'
+Plug 'tpope/vim-fugitive'   " git support
+Plug 'tpope/vim-rhubarb'    " GitHub integration for fugitive
+Plug 'tpope/vim-eunuch'     " UNIX utils
+Plug 'tpope/vim-surround'   " (Un)surround bits of text
+Plug 'tpope/vim-commentary' " (Un)comment lines
+Plug 'ctrlpvim/ctrlp.vim'   " fuzzy finder {{{
+  if executable('ag')
+    " https://robots.thoughtbot.com/faster-grepping-in-vim
+    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+    let g:ctrlp_use_caching = 0
+  else
+    echom("ag is not installed; CtrlP and grep may be slower.")
+  endif
+  "}}}
 "}}}
 
 " colorschemes {{{
@@ -127,6 +149,7 @@ Plug 'DrSpatula/vim-buddy'
 "Plug 'jordwalke/flatlandia'
 "}}}
 
+" Tooling Sections
 if count(s:plugin_groups, 'autocomplete') "{{{
   if has('python3')
     let s:deoplete = 1
@@ -147,6 +170,11 @@ if count(s:plugin_groups, 'autocomplete') "{{{
   endif
 endif "}}}
 
+" JVM Sections
+if s:jvm_plugins "{{{
+  Plug 'tfnico/vim-gradle'
+endif "}}}
+
 if count(s:plugin_groups, 'java') "{{{
   " TODO
 endif "}}}
@@ -159,6 +187,7 @@ if count(s:plugin_groups, 'kotlin') "{{{
   " TODO
 endif "}}}
 
+" Dynamic Language Sections
 if count(s:plugin_groups, 'python') "{{{
   if s:deoplete
     Plug 'zchee/deoplete-jedi'
@@ -179,6 +208,7 @@ if count(s:plugin_groups, 'typescript') "{{{
   " TODO
 endif "}}}
 
+" System Language Sections
 if count(s:plugin_groups, 'c') "{{{
   Plug 'vim-scripts/a.vim'  " alternate.vim
   if s:deoplete && executable('clang')
@@ -210,13 +240,16 @@ if count(s:plugin_groups, 'rust') "{{{
       echom("rustfmt isn't available. Install with 'cargo install rustfmt' to enable format on save for Rust files")
     endif
   "}}}
-  if s:deoplete && executable('racer')
+  if s:deoplete && executable('racer') && !empty('$RUST_SRC_PATH')
     Plug 'racer-rust/vim-racer'
+  elseif s:deoplete && executable('racer')
+    echom("RUST_SRC_PATH isn't set. Provide a valid rust-lang/rust/src path in your shell (see dotfiles)")
   elseif s:deoplete
     echom("racer isn't available. Install with 'cargo install racer' to enable Rust completion.")
   endif
 endif "}}}
 
+" Functional Language Sections
 if count(s:plugin_groups, 'haskell') "{{{
   if s:deoplete && executable('ghc-mod')
     Plug 'eagletmt/neco-ghc'
@@ -225,6 +258,7 @@ if count(s:plugin_groups, 'haskell') "{{{
   endif
 endif "}}}
 
+" Documentation Sections
 if count(s:plugin_groups, 'markdown') "{{{
   " TODO
 endif "}}}

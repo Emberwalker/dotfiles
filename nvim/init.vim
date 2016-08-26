@@ -1,3 +1,5 @@
+" vim: expandtab fdm=marker ts=2 sts=2 sw=2 fdl=0
+
 "
 " Global Neovim init file
 " Arkan <arkan@drakon.io>
@@ -49,7 +51,7 @@ if $SHELL =~ '/fish$'
 endif
 
 " line length marker
-set colorcolumn=120
+set colorcolumn=80
 highlight ColorColumn ctermbg=235
 
 " whitespace
@@ -150,6 +152,14 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" split resize
+" height
+nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 2/3)<CR>
+" width
+nnoremap <silent> <Leader>[ :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
+nnoremap <silent> <Leader>] :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
+
 " toggle hlsearch with backspace
 nnoremap <BS> :set hlsearch! hlsearch?<cr>
 
@@ -173,6 +183,9 @@ inoremap kj <esc>
 " change cursor position in insert mode
 inoremap <C-h> <left>
 inoremap <C-l> <right>
+
+" search
+nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 "}}}
 
 " autocmds {{{
@@ -182,7 +195,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 autocmd BufWritePre * %s/\s\+$//e
 
 " Rust style guide
-autocmd FileType rust setlocal cc=100
+autocmd FileType rust setlocal colorcolumn=100
 autocmd FileType rust setlocal tabstop=4
 autocmd FileType rust setlocal softtabstop=4
 autocmd FileType rust setlocal shiftwidth=4
