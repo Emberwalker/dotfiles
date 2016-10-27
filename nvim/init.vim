@@ -1,3 +1,5 @@
+" vim: expandtab fdm=marker ts=2 sts=2 sw=2 fdl=0
+
 "
 " Global Neovim init file
 " Arkan <arkan@drakon.io>
@@ -49,7 +51,7 @@ if $SHELL =~ '/fish$'
 endif
 
 " line length marker
-set colorcolumn=120
+set colorcolumn=80
 highlight ColorColumn ctermbg=235
 
 " whitespace
@@ -144,15 +146,67 @@ endif
 "}}}
 
 " keybindings {{{
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
+" split switching
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" split resize
+" height
+nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 2/3)<CR>
+" width
+nnoremap <silent> <Leader>[ :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
+nnoremap <silent> <Leader>] :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
+
+" toggle hlsearch with backspace
+nnoremap <BS> :set hlsearch! hlsearch?<cr>
+
+" tab shortcuts
+map <leader>tn :tabnew<CR>
+map <leader>tc :tabclose<CR>
+
+" remap arrow keys
+nnoremap <left> :bprev<CR>
+nnoremap <right> :bnext<CR>
+nnoremap <up> :tabnext<CR>
+nnoremap <down> :tabprev<CR>
+
+" buffer handling
+nnoremap Q :bd<CR>
+
+" smash escape
+inoremap jk <esc>
+inoremap kj <esc>
+
+" change cursor position in insert mode
+inoremap <C-h> <left>
+inoremap <C-l> <right>
+
+" search
+nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
+" nvim terminal
+tnoremap <Esc> <C-\><C-n>
 "}}}
 
 " autocmds {{{
+" restore last known location
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 " trim trailing whitespace
 autocmd BufWritePre * %s/\s\+$//e
+
+" Rust style guide
+autocmd FileType rust setlocal colorcolumn=100
+autocmd FileType rust setlocal tabstop=4
+autocmd FileType rust setlocal softtabstop=4
+autocmd FileType rust setlocal shiftwidth=4
+
+" Kotlin conventions
+autocmd FileType kotlin setlocal tabstop=4
+autocmd FileType kotlin setlocal softtabstop=4
+autocmd FileType kotlin setlocal shiftwidth=4
 "}}}
 
 " site config
