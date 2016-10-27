@@ -4,6 +4,7 @@
       "*.md"
     ]
   core:
+    telemetryConsent: "limited"
     themes: [
       "one-dark-ui"
       "firewatch-syntax"
