@@ -136,3 +136,11 @@ fi
 if [[ -f "$HOME/.zshrc.local" ]]; then
   source "$HOME/.zshrc.local"
 fi
+
+# eval (http://superuser.com/a/230090)
+# Invoke with 'zsh -is eval 'commandhere''
+if [[ $1 == eval ]]
+then
+  "$@"
+  set --
+fi
