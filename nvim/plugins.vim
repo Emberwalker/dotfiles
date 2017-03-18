@@ -132,6 +132,8 @@ Plug 'ctrlpvim/ctrlp.vim'   " fuzzy finder {{{
     echom("ag is not installed; CtrlP and grep may be slower.")
   endif
   "}}}
+Plug 'junegunn/vim-emoji'   " emoji support
+Plug 'kien/rainbow_parentheses.vim'   " identify scopes by parens colours
 "}}}
 
 " colorschemes {{{
@@ -184,7 +186,7 @@ if count(s:plugin_groups, 'scala') "{{{
 endif "}}}
 
 if count(s:plugin_groups, 'kotlin') "{{{
-  " TODO
+  Plug 'udalov/kotlin-vim'
 endif "}}}
 
 " Dynamic Language Sections

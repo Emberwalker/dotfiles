@@ -186,6 +186,9 @@ inoremap <C-l> <right>
 
 " search
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
+" nvim terminal
+tnoremap <Esc> <C-\><C-n>
 "}}}
 
 " autocmds {{{
@@ -199,6 +202,11 @@ autocmd FileType rust setlocal colorcolumn=100
 autocmd FileType rust setlocal tabstop=4
 autocmd FileType rust setlocal softtabstop=4
 autocmd FileType rust setlocal shiftwidth=4
+
+" Kotlin conventions
+autocmd FileType kotlin setlocal tabstop=4
+autocmd FileType kotlin setlocal softtabstop=4
+autocmd FileType kotlin setlocal shiftwidth=4
 "}}}
 
 " site config
