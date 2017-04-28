@@ -33,6 +33,11 @@ if [[ -d "$HOME/.linuxbrew" ]]; then
   fi
 fi
 
+# Homebrew/Linuxbrew
+if hash brew 2>/dev/null; then
+  export HOMEBREW_VERBOSE="true"
+fi
+
 # Cargo
 if [[ -d "$HOME/.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
