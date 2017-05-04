@@ -38,6 +38,7 @@ else
   "call add(s:plugin_groups, 'rust')
   " Functional
   "call add(s:plugin_groups, 'haskell')
+  "call add(s:plugin_groups, 'elixir')
   " documentation
   call add(s:plugin_groups, 'markdown')
   "call add(s:plugin_groups, 'restructured_text')
@@ -258,6 +259,11 @@ if count(s:plugin_groups, 'haskell') "{{{
   elseif s:deoplete
     echom("ghc-mod isn't available. Install it using cabal/stack.")
   endif
+endif "}}}
+
+if count(s:plugin_groups, 'elixir') "{{{
+  Plug 'elixir-lang/vim-elixir'
+  Plug 'slashmili/alchemist.vim'
 endif "}}}
 
 " Documentation Sections
