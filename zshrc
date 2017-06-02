@@ -48,6 +48,11 @@ if [[ -d "$HOME/src/rust" ]]; then
   export RUST_SRC_PATH="$HOME/src/rust/src"
 fi
 
+# Load Zsh completions
+if [[ -d "$HOME/dotfiles/zsh_completions" ]]; then
+  export fpath=($fpath "$HOME/dotfiles/zsh_completions")
+fi
+
 # Sensible default env vars
 if hash vim 2>/dev/null; then
   export EDITOR="$(which vim)"
