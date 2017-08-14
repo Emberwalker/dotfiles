@@ -18,22 +18,32 @@ check_missing() {
   };
 }
 
+# Based on https://unix.stackexchange.com/a/178822
+remove_from_path() {
+  PATH=$(REMOVE_PART="$1" sh -c 'echo ":$PATH:" | sed "s@:$REMOVE_PART:@:@g;s@^:\(.*\):\$@\1@"')
+}
+
 echo ">> Checking for tools..."
-check_missing abs
+check_missing asp
 check_missing makepkg
 check_missing patch
 check_missing updpkgsums
 
-echo ">> Updating ABS tree in /var/abs/..."
-sudo abs
+echo ">> Removing bad PATH entries..."
+remove_from_path "/usr/local/bin"
+remove_from_path "$HOME/bin"
+remove_from_path "$HOME/.linuxbrew/bin"
 
 echo ">> Creating working directory..."
 WORKING_DIR="$(mktemp --tmpdir -d icarus_build_XXXXXX)"
 echo "  >> Done; $WORKING_DIR"
 cd "$WORKING_DIR"
 
-echo ">> Loading core/linux from ABS tree..."
-cp -Rv /var/abs/core/linux/* "$WORKING_DIR/"
+echo ">> Exporting core/linux from ABS tree..."
+asp update
+asp export core/linux
+WORKING_DIR="$WORKING_DIR/linux"
+cd "$WORKING_DIR"
 
 echo ">> Preparing build environment..."
 cp -v "$PATCHES_DIR/acs_override.patch" "$WORKING_DIR/"
