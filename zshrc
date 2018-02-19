@@ -22,14 +22,17 @@ compinit
 # End of lines added by compinstall
 
 # Linuxbrew
-if [[ -d "$HOME/.linuxbrew" ]]; then
-  export PATH="$HOME/.linuxbrew/bin:$PATH"
-  export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
-  export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
+test -d "$HOME/.linuxbrew" && export LINUXBREW_ROOT="$HOME/.linuxbrew"
+test -d "/home/linuxbrew/.linuxbrew" && export LINUXBREW_ROOT="/home/linuxbrew/.linuxbrew"
+
+if [[ $LINUXBREW_ROOT ]]; then
+  export PATH="$LINUXBREW_ROOT/bin:$PATH"
+  export MANPATH="$LINUXBREW_ROOT/share/man:$MANPATH"
+  export INFOPATH="$LINUXBREW_ROOT/share/info:$INFOPATH"
 
   # GOROOT
-  if [[ -d "$HOME/.linuxbrew/opt/go/libexec/bin" ]]; then
-    export PATH="$HOME/.linuxbrew/opt/go/libexec/bin:$PATH"
+  if [[ -d "$LINUXBREW_ROOT/opt/go/libexec/bin" ]]; then
+    export PATH="$LINUXBREW_ROOT/opt/go/libexec/bin:$PATH"
   fi
 fi
 
