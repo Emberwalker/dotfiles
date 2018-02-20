@@ -130,6 +130,7 @@ fi
 if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash pacman 2>/dev/null; then alias pacman="sudo pacman"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
+if hash exa 2>/dev/null; then alias ls="exa"; fi
 
 # Theme customisation
 export BULLETTRAIN_PROMPT_CHAR="λ"
