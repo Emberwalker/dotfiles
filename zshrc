@@ -22,14 +22,17 @@ compinit
 # End of lines added by compinstall
 
 # Linuxbrew
-if [[ -d "$HOME/.linuxbrew" ]]; then
-  export PATH="$HOME/.linuxbrew/bin:$PATH"
-  export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
-  export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
+test -d "$HOME/.linuxbrew" && export LINUXBREW_ROOT="$HOME/.linuxbrew"
+test -d "/home/linuxbrew/.linuxbrew" && export LINUXBREW_ROOT="/home/linuxbrew/.linuxbrew"
+
+if [[ $LINUXBREW_ROOT ]]; then
+  export PATH="$LINUXBREW_ROOT/bin:$PATH"
+  export MANPATH="$LINUXBREW_ROOT/share/man:$MANPATH"
+  export INFOPATH="$LINUXBREW_ROOT/share/info:$INFOPATH"
 
   # GOROOT
-  if [[ -d "$HOME/.linuxbrew/opt/go/libexec/bin" ]]; then
-    export PATH="$HOME/.linuxbrew/opt/go/libexec/bin:$PATH"
+  if [[ -d "$LINUXBREW_ROOT/opt/go/libexec/bin" ]]; then
+    export PATH="$LINUXBREW_ROOT/opt/go/libexec/bin:$PATH"
   fi
 fi
 
@@ -127,6 +130,7 @@ fi
 if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash pacman 2>/dev/null; then alias pacman="sudo pacman"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
+if hash exa 2>/dev/null; then alias ls="exa"; fi
 
 # Theme customisation
 export BULLETTRAIN_PROMPT_CHAR="λ"
