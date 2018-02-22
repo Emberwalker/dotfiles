@@ -38,6 +38,7 @@ else
   "call add(s:plugin_groups, 'rust')
   " Functional
   "call add(s:plugin_groups, 'haskell')
+  "call add(s:plugin_groups, 'erlang')
   "call add(s:plugin_groups, 'elixir')
   " documentation
   call add(s:plugin_groups, 'markdown')
@@ -259,6 +260,13 @@ if count(s:plugin_groups, 'haskell') "{{{
   elseif s:deoplete
     echom("ghc-mod isn't available. Install it using cabal/stack.")
   endif
+endif "}}}
+
+if count(s:plugin_groups, 'erlang') "{{{
+  Plug 'vim-erlang/vim-erlang-runtime'
+  Plug 'vim-erlang/vim-erlang-compiler'
+  Plug 'vim-erlang/vim-erlang-omnicomplete'
+  Plug 'vim-erlang/vim-erlang-tags'
 endif "}}}
 
 if count(s:plugin_groups, 'elixir') "{{{
