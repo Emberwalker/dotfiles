@@ -1,0 +1,62 @@
+{
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.colorCustomizations": {
+        "[Ayu Mirage]": {
+            "editor.selectionBackground": "#4B5B6E"
+        }
+    },
+    "editor.cursorBlinking": "phase",
+    "editor.fontFamily": "'Knack Nerd Font', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.minimap.enabled": true,
+    "editor.renderIndentGuides": true,
+    "editor.rulers": [120],
+    "files.autoSave": "onFocusChange",
+    "terminal.external.osxExec": "/Applications/iTerm.app",
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+
+    "[markdown]":  {
+        "editor.wordWrap": "on",
+        "editor.quickSuggestions": false,
+        "editor.tabSize": 2
+    },
+    "[elixir]":  {
+        "editor.tabSize": 2
+    },
+    "markdownlint.config": {
+        "MD013": false,
+        "MD029": false
+    },
+    "extensions.autoUpdate": true,
+    "gitlens.codeLens.scopes": [
+        "document",
+        "containers"
+    ],
+    "gitlens.codeLens.enabled": false,
+    "gitlens.currentLine.enabled": false,
+    "gitlens.hovers.currentLine.over": "line",
+    "gitlens.recentChanges.highlight.locations": [
+        "gutter",
+        "overview",
+        "line"
+    ],
+    "rust.mode": "rls",
+    "rust.rls": {
+        "useRustfmt": true
+    },
+    "rust.rustup": {
+        "toolchain": "nightly-x86_64-apple-darwin",
+        "nightlyToolchain": "nightly-x86_64-apple-darwin"
+    },
+    "nasc-touchbar.enableSrcGroup": true,
+    "nasc-touchbar.enableFuncGroup": true,
+    "nasc-touchbar.enableCursorsGroup": true,
+    "nasc-touchbar.enableEditorGroup": true,
+    "nasc-touchbar.selectNext": false,
+    "nasc-touchbar.addCursorBelow": false,
+    "nasc-touchbar.rename": false,
+    "nasc-touchbar.goToDefinition": false,
+    "nasc-touchbar.togglePanel": false,
+    "nasc-touchbar.showCommands": false,
+    "editor.renderWhitespace": "none"
+}
