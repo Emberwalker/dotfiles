@@ -68,6 +68,9 @@ if hash go 2>/dev/null; then
   export PATH="$GOPATH/bin:$PATH"
 fi
 if [[ -d "$HOME/bin" ]]; then export PATH="$HOME/bin:$PATH"; fi
+if [[ -d "/Applications/Visual Studio Code.app" ]]; then export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"; fi
+if [[ -d "/Applications/Visual Studio Code - Insiders.app" ]]; then export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"; fi
+
 ## Jayatana (Unity global menu support for Java apps)
 if [[ $(ps aux | grep unity-panel | wc -l) -gt 1 ]] && [[ -f "/usr/share/java/jayatanaag.jar" ]]; then
   export JAVA_TOOL_OPTIONS="-javaagent:/usr/share/java/jayatanaag.jar $JAVA_TOOL_OPTIONS"
