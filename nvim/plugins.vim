@@ -136,6 +136,8 @@ Plug 'ctrlpvim/ctrlp.vim'   " fuzzy finder {{{
   "}}}
 Plug 'junegunn/vim-emoji'   " emoji support
 Plug 'kien/rainbow_parentheses.vim'   " identify scopes by parens colours
+Plug 'scrooloose/nerdtree'  " file browser
+Plug 'Xuyuanp/nerdtree-git-plugin'  " git support in NERDtree
 "}}}
 
 " colorschemes {{{

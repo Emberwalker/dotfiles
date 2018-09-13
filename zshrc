@@ -70,6 +70,11 @@ fi
 if [[ -d "$HOME/bin" ]]; then export PATH="$HOME/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code.app" ]]; then export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code - Insiders.app" ]]; then export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"; fi
+if [[ -d "$HOME/.nvm" ]]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
 
 ## Jayatana (Unity global menu support for Java apps)
 if [[ $(ps aux | grep unity-panel | wc -l) -gt 1 ]] && [[ -f "/usr/share/java/jayatanaag.jar" ]]; then
@@ -83,11 +88,53 @@ if hash clang 2>/dev/null; then
   export HOMEBREW_CXX="clang++"
 fi
 
+# Jenv (Java virtualenv)
+if hash jenv 2>/dev/null; then
+  eval "$(jenv init -)"
+fi
+
+if hash bat 2>/dev/null; then
+  export BAT_THEME="TwoDark"
+  alias cat=bat
+fi
+
 # thefuck
 if hash thefuck 2>/dev/null; then
   eval "$(thefuck --alias)"
   eval "$(thefuck --alias arse)"
   eval "$(thefuck --alias shit)"
+fi
+
+# Selecta (see https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md)
+if hash selecta 2>/dev/null; then
+  # By default, ^S freezes terminal output and ^Q resumes it. Disable that so
+  # that those keys can be used for other things.
+  unsetopt flowcontrol
+  # Run Selecta in the current working directory, appending the selected path, if
+  # any, to the current command, followed by a space.
+  function insert-selecta-path-in-command-line() {
+      local selected_path
+      # Print a newline or we'll clobber the old prompt.
+      echo
+      # Find the path; abort if the user doesn't select anything.
+      selected_path=$(find * -type f | selecta) || return
+      # Append the selection to the current command buffer.
+      eval 'LBUFFER="$LBUFFER$selected_path "'
+      # Redraw the prompt since Selecta has drawn several new lines of text.
+      zle reset-prompt
+  }
+  # Create the zle widget
+  zle -N insert-selecta-path-in-command-line
+  # Bind the key to the newly created widget
+  bindkey "^S" "insert-selecta-path-in-command-line"
+fi
+
+# Pyenv
+if hash pyenv 2>/dev/null; then
+  eval "$(pyenv init -)"
+  if hash pyenv-virtualenv-init 2>/dev/null; then
+    eval "$(pyenv virtualenv-init -)"
+  fi
 fi
 
 # Virtualenv Wrapper
@@ -104,6 +151,43 @@ else
   echo "warn: unable to locate gpg(2)-agent -- is GPG installed?"
 fi
 
+# Theme customisation
+## Bullet Train
+export BULLETTRAIN_PROMPT_CHAR="λ"
+export BULLETTRAIN_PROMPT_SEPARATE_LINE=true
+export BULLETTRAIN_GIT_PROMPT_CMD=\${\$(git_prompt_info)//\\//\ \ }
+export BULLETTRAIN_GIT_COLORIZE_DIRTY=false
+export BULLETTRAIN_GIT_ADDED=" %F{green}✚%F{black}"
+export BULLETTRAIN_GIT_MODIFIED=" %F{red}⚡%F{black}"
+export BULLETTRAIN_GIT_UNTRACKED=" %F{cyan}⛊%F{black}"
+export BULLETTRAIN_EXEC_TIME_SHOW=true
+## Powerlevel9k
+POWERLEVEL9K_INSTALLATION_PATH="$ANTIGEN_BUNDLES/bhilburn/powerlevel9k"
+POWERLEVEL9K_MODE="nerdfont-complete"
+POWERLEVEL9K_STATUS_VERBOSE=false
+POWERLEVEL9K_STATUS_OK_IN_NON_VERBOSE=true
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=''
+POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%K{white}%F{black} `date +%T` %f%k%F{white}%f "
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh os_icon dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time pyenv java_version time background_jobs status)
+POWERLEVEL9K_OS_ICON_BACKGROUND="white"
+POWERLEVEL9K_OS_ICON_FOREGROUND="blue"
+POWERLEVEL9K_DIR_HOME_FOREGROUND="white"
+POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="white"
+POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="white"
+POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
+POWERLEVEL9K_JAVA_ICON="\ue256"
+POWERLEVEL9K_VPN_ICON="\ufa81"
+POWERLEVEL9K_SSH_ICON="\ufc7e"
+POWERLEVEL9K_VCS_UNTRACKED_ICON="\uf128"
+POWERLEVEL9K_VCS_UNSTAGED_ICON="\uf12a"
+POWERLEVEL9K_VCS_STAGED_ICON="\uf44d"
+POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON="\uf63b"
+POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON="\uf63e"
+POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\ufb26%f "
+
 # Load antigen (plugin management)
 fpath=("$HOME/.antigen.zsh" $fpath)
 source "$HOME/.antigen.zsh"
@@ -111,7 +195,8 @@ export DEFAULT_USER="arkan"
 antigen use oh-my-zsh
 antigen bundles < "$HOME/.zsh_packages"
 #antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
-antigen theme agnoster
+#antigen theme agnoster
+antigen theme bhilburn/powerlevel9k powerlevel9k
 antigen apply
 
 # Standard-issue aliases
@@ -134,18 +219,6 @@ if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash pacman 2>/dev/null; then alias pacman="sudo pacman"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 if hash exa 2>/dev/null; then alias ls="exa"; fi
-
-# Theme customisation
-export BULLETTRAIN_PROMPT_CHAR="λ"
-export BULLETTRAIN_PROMPT_SEPARATE_LINE=true
-
-export BULLETTRAIN_GIT_PROMPT_CMD=\${\$(git_prompt_info)//\\//\ \ }
-export BULLETTRAIN_GIT_COLORIZE_DIRTY=false
-export BULLETTRAIN_GIT_ADDED=" %F{green}✚%F{black}"
-export BULLETTRAIN_GIT_MODIFIED=" %F{red}⚡%F{black}"
-export BULLETTRAIN_GIT_UNTRACKED=" %F{cyan}⛊%F{black}"
-
-export BULLETTRAIN_EXEC_TIME_SHOW=true
 
 # System banner (if present)
 if [[ -f "$HOME/.banner" ]]; then
