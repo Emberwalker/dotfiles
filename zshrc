@@ -137,6 +137,11 @@ if hash pyenv 2>/dev/null; then
   fi
 fi
 
+# Rbenv
+if hash rbenv 2>/dev/null; then
+  eval "$(rbenv init -)"
+fi
+
 # Virtualenv Wrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/dev/python
@@ -187,17 +192,26 @@ POWERLEVEL9K_VCS_STAGED_ICON="\uf44d"
 POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON="\uf63b"
 POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON="\uf63e"
 POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\ufb26%f "
+## Geometry
+GEOMETRY_PROMPT_PLUGINS=(exec_time git +kube node virtualenv)
+GEOMETRY_COLOR_PROMPT="white"
+PROMPT_GEOMETRY_GIT_TIME=false
+PROMPT_GEOMETRY_GIT_CONFLICTS=true
+PROMPT_GEOMETRY_COLORIZE_ROOT=true
 
 # Load antigen (plugin management)
-fpath=("$HOME/.antigen.zsh" $fpath)
-source "$HOME/.antigen.zsh"
+#source "/usr/local/share/antigen/antigen.zsh"
 export DEFAULT_USER="arkan"
-antigen use oh-my-zsh
-antigen bundles < "$HOME/.zsh_packages"
+#antigen use oh-my-zsh
+#antigen bundles < "$HOME/.zsh_packages"
 #antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
 #antigen theme agnoster
-antigen theme bhilburn/powerlevel9k powerlevel9k
-antigen apply
+#antigen theme bhilburn/powerlevel9k powerlevel9k
+#antigen apply
+
+# Antibody (package management)
+source <(antibody init)
+antibody bundle < "$HOME/.zsh_packages"
 
 # Standard-issue aliases
 alias emacs="emacs -nw"
@@ -218,7 +232,30 @@ fi
 if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
 if hash pacman 2>/dev/null; then alias pacman="sudo pacman"; fi
 if hash firejail 2>/dev/null; then alias jail="firejail"; fi
-if hash exa 2>/dev/null; then alias ls="exa"; fi
+if hash exa 2>/dev/null; then
+  alias ls="exa"
+  alias la="exa -a"
+fi
+
+# Git aliases
+alias gs="git status"
+alias gp="git pull"
+alias gpp="git pull --prune"
+alias gc="git commit"
+alias gr="git rebase"
+alias gri="git rebase -i"
+alias gm="git merge"
+alias gco="git checkout"
+
+gpo() {
+  git push -u origin $(git rev-parse --abbrev-ref HEAD)
+}
+
+# Key bindings
+bindkey ";5C" forward-word
+bindkey ";5D" backward-word
+bindkey "^[[3~" delete-char
+bindkey "^[3;5~" delete-char
 
 # System banner (if present)
 if [[ -f "$HOME/.banner" ]]; then
