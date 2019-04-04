@@ -1,8 +1,8 @@
 - defaults:
     link:
-      create: true
-      relink: true
-      force: true
+        create: true
+        relink: true
+        force: true
 
 - clean: ['~', '~/.config', '~/.virtualenvs']
 
@@ -10,6 +10,7 @@
     ~/.antigen.zsh: .antigen.zsh
     ~/.zshrc: zshrc
     ~/.zsh_packages: zsh_packages
+    ~/.config/fish: fish
     ~/.tmux.conf: tmuxrc
     ~/.vimrc: vimrc
     ~/.chunkwmrc: chunkwmrc

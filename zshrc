@@ -6,20 +6,28 @@
 #                                                                                            #
 ##############################################################################################
 
-# Lines configured by zsh-newuser-install
 HISTFILE=~/.zsh_history
-HISTSIZE=250
-SAVEHIST=250
-setopt appendhistory autocd extendedglob
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history auto_cd extended_glob share_history correct_all auto_list auto_menu always_to_end
 bindkey -e
-# End of lines configured by zsh-newuser-install
 
-# The following lines were added by compinstall
+zstyle ':completion:*' menu select # select completions with arrow keys
+zstyle ':completion:*' group-name '' # group results by category
+zstyle ':completion:::::' completer _expand _complete _ignored _approximate # enable approximate matches for completion
+
 zstyle :compinstall filename "$HOME/.zshrc"
 
+# Init completion using the cached completions
 autoload -Uz compinit
-compinit
-# End of lines added by compinstall
+typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
+if [ $(date +'%j') != $updated_at ]; then
+  compinit -i
+else
+  compinit -C -i
+fi
+
+zmodload -i zsh/complist
 
 # Linuxbrew
 test -d "$HOME/.linuxbrew" && export LINUXBREW_ROOT="$HOME/.linuxbrew"
@@ -93,6 +101,9 @@ if hash jenv 2>/dev/null; then
   eval "$(jenv init -)"
 fi
 
+# Jabba (Java version management)
+[ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
+
 if hash bat 2>/dev/null; then
   export BAT_THEME="TwoDark"
   alias cat=bat
@@ -103,6 +114,11 @@ if hash thefuck 2>/dev/null; then
   eval "$(thefuck --alias)"
   eval "$(thefuck --alias arse)"
   eval "$(thefuck --alias shit)"
+fi
+
+# Tower Git
+if hash gittower 2>/dev/null && ! hash tower 2>/dev/null; then
+  alias tower=gittower
 fi
 
 # Selecta (see https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md)
@@ -137,6 +153,11 @@ if hash pyenv 2>/dev/null; then
   fi
 fi
 
+# Pipenv
+if hash pipenv 2>/dev/null; then
+  eval "$(pipenv --completion)"
+fi
+
 # Rbenv
 if hash rbenv 2>/dev/null; then
   eval "$(rbenv init -)"
@@ -146,7 +167,13 @@ fi
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/dev/python
 
+# Spark
+if [ -d /usr/local/opt/apache-spark ]; then
+  export SPARK_HOME="/usr/local/opt/apache-spark"
+fi
+
 # GPG2
+export GPG_TTY=$(tty)
 if hash gpg2-agent 2> /dev/null; then
   GPG_AGENT="gpg2-agent"
   alias gpg="gpg2" # Sod you old distros
@@ -241,6 +268,7 @@ fi
 alias gs="git status"
 alias gp="git pull"
 alias gpp="git pull --prune"
+alias gppm="git checkout master && git pull --prune"
 alias gc="git commit"
 alias gr="git rebase"
 alias gri="git rebase -i"
