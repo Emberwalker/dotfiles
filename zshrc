@@ -226,9 +226,35 @@ PROMPT_GEOMETRY_GIT_TIME=false
 PROMPT_GEOMETRY_GIT_CONFLICTS=true
 PROMPT_GEOMETRY_COLORIZE_ROOT=true
 
+setopt PROMPT_SUBST
+function _geometry_prompt_sym() {
+  if git rev-parse --show-toplevel > /dev/null 2>&1; then
+    echo "⇋ "
+  else
+    echo "△ "
+  fi
+}
+function _geometry_path() {
+  local gitroot="$(git rev-parse --show-toplevel 2>/dev/null)"
+  if [[ "$gitroot" != "" ]]; then
+    local pwd_segments=("${(s./.)PWD}")
+    local gitroot_segments=("${(s./.)gitroot}")
+    local shift_count=$(( ${#pwd_segments} - ${#gitroot_segments} + 1 ))
+    local render_segments=("${(@)pwd_segments:$(( ${#pwd_segments} - shift_count ))}")
+    typeset "render_segments[1]"="${render_segments[1]%%-service}"
+    echo "${(j./.)render_segments}"
+  else
+    echo "%3~"
+  fi
+}
+
+GEOMETRY_SYMBOL_ROOT="⚠️ "
+GEOMETRY_SYMBOL_EXIT_VALUE="%F{red}\$(_geometry_prompt_sym)%f"
+GEOMETRY_SYMBOL_PROMPT="\$(_geometry_prompt_sym)"
+GEOMETRY_PROMPT_PATH="\$(_geometry_path)"
+
 # Load antigen (plugin management)
 #source "/usr/local/share/antigen/antigen.zsh"
-export DEFAULT_USER="arkan"
 #antigen use oh-my-zsh
 #antigen bundles < "$HOME/.zsh_packages"
 #antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
@@ -239,6 +265,9 @@ export DEFAULT_USER="arkan"
 # Antibody (package management)
 source <(antibody init)
 antibody bundle < "$HOME/.zsh_packages"
+
+# Plugin configs
+FAST_HIGHLIGHT[use_brackets]=1
 
 # Standard-issue aliases
 alias emacs="emacs -nw"

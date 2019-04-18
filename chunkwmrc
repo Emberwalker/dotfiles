@@ -131,6 +131,7 @@ chunkc core::load ffm.so
 
 chunkc tiling::rule --owner Finder --name Copy --state float &
 chunkc tiling::rule --owner \"System Preferences\" --state float &
+chunkc tiling::rule --owner \"IntelliJ IDEA\" --state float &
 #chunkc tiling::rule --owner \"IntelliJ IDEA\" --name \"Welcome to IntelliJ IDEA\" --state float &
 #chunkc tiling::rule --owner \"Intellij IDEA\" --except \".*/dev/.*\" --state float &
 chunkc tiling::rule --owner Outlook --name \".* Reminders?\" --state float &
