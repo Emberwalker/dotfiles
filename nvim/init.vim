@@ -42,7 +42,7 @@ set nrformats-=octal                                "always assume decimal numbe
 set showcmd
 set tags=tags;/
 set showfulltag
-set modeline
+set nomodeline                                      "this has security implications; don't use modelines
 set modelines=5
 
 if $SHELL =~ '/fish$'

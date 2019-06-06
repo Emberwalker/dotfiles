@@ -96,13 +96,15 @@ if hash clang 2>/dev/null; then
   export HOMEBREW_CXX="clang++"
 fi
 
-# Jenv (Java virtualenv)
-if hash jenv 2>/dev/null; then
-  eval "$(jenv init -)"
-fi
-
 # Jabba (Java version management)
-[ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
+if [ -s "$HOME/.jabba/jabba.sh" ]; then
+  source "$HOME/.jabba/jabba.sh"
+ 
+  function __jabba_on_cd() {
+    [[ -f "./.jabbarc" ]] && echo "\n☕️⚡️ Setting Jabba JDK from .jabbarc in $PWD: $(cat .jabbarc | tr -d "\n")" && jabba use
+  }
+  chpwd_functions=(${chpwd_functions[@]} "__jabba_on_cd")
+fi
 
 if hash bat 2>/dev/null; then
   export BAT_THEME="TwoDark"
