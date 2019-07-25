@@ -99,7 +99,7 @@ fi
 # Jabba (Java version management)
 if [ -s "$HOME/.jabba/jabba.sh" ]; then
   source "$HOME/.jabba/jabba.sh"
- 
+
   function __jabba_on_cd() {
     [[ -f "./.jabbarc" ]] && echo "\n☕️⚡️ Setting Jabba JDK from .jabbarc in $PWD: $(cat .jabbarc | tr -d "\n")" && jabba use
   }
@@ -222,7 +222,7 @@ POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON="\uf63b"
 POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON="\uf63e"
 POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\ufb26%f "
 ## Geometry
-GEOMETRY_PROMPT_PLUGINS=(exec_time git +kube node virtualenv)
+GEOMETRY_PROMPT_PLUGINS=(exec_time git kube_simplified node virtualenv)
 GEOMETRY_COLOR_PROMPT="white"
 PROMPT_GEOMETRY_GIT_TIME=false
 PROMPT_GEOMETRY_GIT_CONFLICTS=true
@@ -267,6 +267,9 @@ GEOMETRY_PROMPT_PATH="\$(_geometry_path)"
 # Antibody (package management)
 source <(antibody init)
 antibody bundle < "$HOME/.zsh_packages"
+
+# Load custom plugins
+source "$HOME/dotfiles/zsh_plugins/geometry_kube_simplified/plugin.zsh"
 
 # Plugin configs
 FAST_HIGHLIGHT[use_brackets]=1
