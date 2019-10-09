@@ -13,7 +13,7 @@
     ~/.config/fish: fish
     ~/.tmux.conf: tmuxrc
     ~/.vimrc: vimrc
-    ~/.chunkwmrc: chunkwmrc
+    ~/.yabairc: yabairc
     ~/.skhdrc: skhdrc
     ~/.config/nvim/init.vim: nvim/init.vim
     ~/.config/nvim/plugins.vim: nvim/plugins.vim

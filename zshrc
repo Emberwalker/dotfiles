@@ -296,6 +296,7 @@ if hash firejail 2>/dev/null; then alias jail="firejail"; fi
 if hash exa 2>/dev/null; then
   alias ls="exa"
   alias la="exa -a"
+  alias ll="exa -la"
 fi
 
 # Git aliases
@@ -311,6 +312,11 @@ alias gco="git checkout"
 
 gpo() {
   git push -u origin $(git rev-parse --abbrev-ref HEAD)
+}
+
+# iTerm tools
+send_notification() {
+  echo -n "\e]9;$1\007"
 }
 
 # Key bindings
