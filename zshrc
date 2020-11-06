@@ -75,6 +75,7 @@ if hash go 2>/dev/null; then
   export GOPATH="$HOME/go"
   export PATH="$GOPATH/bin:$PATH"
 fi
+if [[ -d "/snap/bin" ]]; then export PATH="/snap/bin:$PATH"; fi
 if [[ -d "$HOME/bin" ]]; then export PATH="$HOME/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code.app" ]]; then export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code - Insiders.app" ]]; then export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"; fi
