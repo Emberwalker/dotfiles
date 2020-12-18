@@ -106,6 +106,12 @@ if [ -s "$HOME/.jabba/jabba.sh" ]; then
   chpwd_functions=(${chpwd_functions[@]} "__jabba_on_cd")
 fi
 
+# GitHub CLI
+if hash gh 2>/dev/null; then
+  eval "$(gh completion -s zsh)"
+fi
+
+# bat, the better cat
 if hash bat 2>/dev/null; then
   export BAT_THEME="TwoDark"
   alias cat=bat
@@ -174,6 +180,16 @@ if [ -d /usr/local/opt/apache-spark ]; then
   export SPARK_HOME="/usr/local/opt/apache-spark"
 fi
 
+# Pipx
+if [[ -d "$HOME/.local/bin" ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# Poetry
+if [[ -d "$HOME/.poetry/bin" ]]; then
+  export PATH="$HOME/.poetry/bin:$PATH"
+fi
+
 # GPG2
 export GPG_TTY=$(tty)
 if hash gpg2-agent 2> /dev/null; then
@@ -183,6 +199,10 @@ elif hash gpg-agent 2> /dev/null; then
   GPG_AGENT="gpg-agent"
 else
   echo "warn: unable to locate gpg(2)-agent -- is GPG installed?"
+fi
+
+if hash toxiproxy-cli 2> /dev/null; then
+  alias toxi="toxiproxy-cli"
 fi
 
 # Theme customisation
@@ -255,18 +275,15 @@ GEOMETRY_SYMBOL_EXIT_VALUE="%F{red}\$(_geometry_prompt_sym)%f"
 GEOMETRY_SYMBOL_PROMPT="\$(_geometry_prompt_sym)"
 GEOMETRY_PROMPT_PATH="\$(_geometry_path)"
 
-# Load antigen (plugin management)
-#source "/usr/local/share/antigen/antigen.zsh"
-#antigen use oh-my-zsh
-#antigen bundles < "$HOME/.zsh_packages"
-#antigen theme caiogondim/bullet-train-oh-my-zsh-theme bullet-train
-#antigen theme agnoster
-#antigen theme bhilburn/powerlevel9k powerlevel9k
-#antigen apply
-
 # Antibody (package management)
-source <(antibody init)
-antibody bundle < "$HOME/.zsh_packages"
+alias antibody-regen="antibody bundle < ~/.zsh_packages > ~/.zsh_bundle.sh"
+if [[ -f "$HOME/.zsh_bundle.sh" ]]; then
+  source "$HOME/.zsh_bundle.sh"
+else
+  echo "!! Using dynamically-loaded Antibody. This may be slower. Run 'antibody-regen' to statically generate."
+  source <(antibody init)
+  antibody bundle < "$HOME/.zsh_packages"
+fi
 
 # Load custom plugins
 source "$HOME/dotfiles/zsh_plugins/geometry_kube_simplified/plugin.zsh"
@@ -298,12 +315,13 @@ if hash exa 2>/dev/null; then
   alias la="exa -a"
   alias ll="exa -la"
 fi
+if hash tmux 2>/dev/null; then alias tmx="tmux new-session -A -s tmx"; fi
 
 # Git aliases
 alias gs="git status"
 alias gp="git pull"
 alias gpp="git pull --prune"
-alias gppm="git checkout master && git pull --prune"
+alias gppm="git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune"
 alias gc="git commit"
 alias gr="git rebase"
 alias gri="git rebase -i"
@@ -344,3 +362,5 @@ then
   "$@"
   set --
 fi
+
+source /Users/roberttully/.config/broot/launcher/bash/br

@@ -14,3 +14,9 @@ end
 if status is-interactive
     # TODO
 end
+
+starship init fish | source
+
+# Disable loading CRDs, since they're denied by RBAC
+set -gx FISH_KUBECTL_COMPLETION_COMPLETE_CRDS 0
+

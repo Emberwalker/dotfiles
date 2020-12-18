@@ -52,6 +52,13 @@ ctrl + alt - j : yabai -m window --insert south
 ctrl + alt - k : yabai -m window --insert north
 ctrl + alt - l : yabai -m window --insert east
 
+# punt window to other screens
+ctrl + cmd - z  : yabai -m window --display prev
+ctrl + cmd - c  : yabai -m window --display next
+ctrl + alt + cmd - 1  : tabai -m window --display 1
+ctrl + alt + cmd - 2  : tabai -m window --display 2
+ctrl + alt + cmd - 3  : tabai -m window --display 3
+
 # rotate tree
 alt - r : yabai -m space --rotate 90
 
