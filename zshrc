@@ -322,12 +322,15 @@ if hash tmux 2>/dev/null; then alias tmx="tmux new-session -A -s tmx"; fi
 alias gs="git status"
 alias gp="git pull"
 alias gpp="git pull --prune"
-alias gppm="git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune"
 alias gc="git commit"
 alias gr="git rebase"
 alias gri="git rebase -i"
 alias gm="git merge"
 alias gco="git checkout"
+
+gppm() {
+  git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune
+}
 
 gpo() {
   git push -u origin $(git rev-parse --abbrev-ref HEAD)
@@ -364,4 +367,3 @@ then
   set --
 fi
 
-source /Users/roberttully/.config/broot/launcher/bash/br
