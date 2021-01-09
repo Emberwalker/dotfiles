@@ -130,6 +130,15 @@ if hash gittower 2>/dev/null && ! hash tower 2>/dev/null; then
   alias tower=gittower
 fi
 
+# Kubernetes
+if hash kubectl 2>/dev/null; then
+  alias kctl=kubectl
+fi
+if hash kubens 2>/dev/null; then
+  alias kns=kubens
+  alias kctx=kubectx
+fi
+
 # Selecta (see https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md)
 if hash selecta 2>/dev/null; then
   # By default, ^S freezes terminal output and ^Q resumes it. Disable that so
