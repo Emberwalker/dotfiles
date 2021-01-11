@@ -39,7 +39,7 @@ bind - split-window -v
 unbind '"'
 unbind %
 
-# reload config file (change file location to your the tmux.conf you want to use)
+# reload config file (change file location to the tmux.conf you want to use)
 bind r source-file ~/.tmux.conf
 
 # Enable mouse mode (tmux 2.1 and above)
@@ -50,3 +50,6 @@ source-file "${HOME}/dotfiles/tmux/orange.tmuxtheme"
 
 # Fix ctrl-arrow
 set-window-option -g xterm-keys on
+
+# Fix RGB reporting for nvim
+set-option -sa terminal-overrides ',xterm-256color:RGB'
