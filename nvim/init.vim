@@ -1,6 +1,10 @@
+" Disable vi compatibility mode
+if &compatible
+  set nocompatible
+endif
+
 " == neovim-sensible ==
 " See https://github.com/jeffkreeftmeijer/neovim-sensible/blob/master/plugin/neovim-sensible.vim
-
 set number relativenumber           " Use "hybrid" (both absolute and relative) line numbers
 set clipboard=unnamed               " Use the system clipboard
 set colorcolumn=120                 " Use a color column on the 120-character mark
@@ -18,6 +22,38 @@ function! EnsureExists(path)
     call mkdir(expand(a:path))
   endif
 endfunction
+
+set nomodeline        " modelines are an insecure feature
+set ignorecase        " ignore case for searching
+set smartcase         " do case-sensitive if there's a capital letter
+set showmatch         " automatically highlight matching braces/brackets/etc.
+
+" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
+" delays and poor user experience. Needed by Signify/coc.nvim.
+set updatetime=100
+
+" open splits down and to the right
+set splitbelow
+set splitright
+
+" persistent undo
+if exists('+undofile')
+  set undofile
+  let &undodir = expand("~/.nvim/undo")
+endif
+
+" backups
+set backup
+let &backupdir = expand("~/.nvim/backup")
+
+" swap files
+let &directory = expand("~/.nvim/swap")
+set noswapfile
+
+call EnsureExists("~/.nvim")
+call EnsureExists(&undodir)
+call EnsureExists(&backupdir)
+call EnsureExists(&directory)
 
 " Ctrl-{h,j,k,l} to navigate panes
 nnoremap <C-l> <C-w>l
@@ -57,37 +93,83 @@ nnoremap <BS> :set hlsearch! hlsearch?<cr>
 nnoremap <silent> <Leader>do :lopen<CR>
 nnoremap <silent> <Leader>dc :lclose<CR>
 
-set nomodeline        " modelines are an insecure feature
-set ignorecase        " ignore case for searching
-set smartcase         " do case-sensitive if there's a capital letter
-set showmatch         " automatically highlight matching braces/brackets/etc.
+" kill current buffer (wipeout) with bufkill
+nnoremap <silent> Q :BW<CR>
 
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience. Needed by Signify/coc.nvim.
-set updatetime=100
+" Which Key guide
+nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
-" open splits down and to the right
-set splitbelow
-set splitright
+" Denite
+"   ;         - Browser currently open buffers
+"   <leader>t - Browse list of files in current directory
+"   <leader>g - Search current directory for occurences of given term and close window if no results
+"   <leader>j - Search current directory for occurences of word under cursor
+nmap ; :Denite buffer<CR>
+nmap <leader>t :DeniteProjectDir file/rec<CR>
+nnoremap <leader>g :<C-u>Denite grep:. -no-empty<CR>
+nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
 
-" persistent undo
-if exists('+undofile')
-  set undofile
-  let &undodir = expand("~/.nvim/undo")
-endif
+" Ale diagnostics back/forward
+nmap <silent> [d <Plug>(ale_previous_wrap)
+nmap <silent> ]d <Plug>(ale_next_wrap)
 
-" backups
-set backup
-let &backupdir = expand("~/.nvim/backup")
+" Toggle NERDTree
+nnoremap <silent> <Leader>f :NERDTreeToggle<Enter>
+" Open NERDTree on current file
+nnoremap <silent> <Leader>v :NERDTreeFind<CR>
 
-" swap files
-let &directory = expand("~/.nvim/swap")
-set noswapfile
+" Toggle TagBar (file structure)
+nnoremap <leader>s :TagbarToggle<CR>
 
-call EnsureExists("~/.nvim")
-call EnsureExists(&undodir)
-call EnsureExists(&backupdir)
-call EnsureExists(&directory)
+" coc go-to code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>rf  <Plug>(coc-format-selected)
+nmap <leader>rf  <Plug>(coc-format-selected)
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
+" Remap <C-f> and <C-b> for scroll float windows/popups.
+nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+
+" Use CTRL-S for selections ranges.
+" Requires 'textDocument/selectionRange' support of language server.
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
 
 if $SHELL =~ '/fish$'
   " VIM expects to be run from a POSIX shell.
@@ -115,10 +197,6 @@ let g:ale_disable_lsp = 1   " Defer to CoC.nvim for LSP interactions
 
 
 " == Dein ==
-if &compatible
-  set nocompatible
-endif
-
 set runtimepath+=~/.nvim/dein/repos/github.com/Shougo/dein.vim
 
 if dein#load_state('~/.nvim/dein')
@@ -188,13 +266,6 @@ colorscheme afterglow
 
 syntax enable
 filetype plugin indent on
-
-" kill current buffer (wipeout) with bufkill
-nnoremap <silent> Q :BW<CR>
-
-
-" == Which Key ==
-nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
 
 " == RipGrep (:Rg) ==
@@ -274,16 +345,6 @@ endfunction
 
 call s:profile(s:denite_options)
 
-" === Denite shorcuts === "
-"   ;         - Browser currently open buffers
-"   <leader>t - Browse list of files in current directory
-"   <leader>g - Search current directory for occurences of given term and close window if no results
-"   <leader>j - Search current directory for occurences of word under cursor
-nmap ; :Denite buffer<CR>
-nmap <leader>t :DeniteProjectDir file/rec<CR>
-nnoremap <leader>g :<C-u>Denite grep:. -no-empty<CR>
-nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
-
 " Define mappings while in 'filter' mode
 "   <C-o>         - Switch to normal mode inside of search results
 "   <Esc>         - Exit denite window in any mode
@@ -356,11 +417,6 @@ let g:NERDTreeWinPos = "right"        " Show NERDTree on the right
 let g:NERDTreeGitStatusUseNerdFonts = 1
 let g:NERDTreeGitStatusShowIgnored = 1
 
-" Toggle NERDTree
-nnoremap <silent> <Leader>f :NERDTreeToggle<Enter>
-" Open NERDTree on current file
-nnoremap <silent> <Leader>v :NERDTreeFind<CR>
-
 
 " == Airline ==
 let g:airline_powerline_fonts = 1
@@ -385,32 +441,20 @@ let g:startify_banner_ascii = [
 let g:startify_custom_header = 'startify#pad(g:startify_banner_ascii + startify#fortune#boxed())'
 
 
-" == Deoplete ==
-" let g:deoplete#enable_at_startup = 1
-" call deoplete#custom#option('sources', {
-" \ '_': ['ale'],
-" \})
-
-
-" == Ale ==
-nmap <silent> [d <Plug>(ale_previous_wrap)
-nmap <silent> ]d <Plug>(ale_next_wrap)
-
-
 " == CoC ==
-
 set hidden        " TextEdit might fail if hidden is not set.
 set cmdheight=2   " Give more space for displaying messages.
 set shortmess+=c  " Don't pass messages to |ins-completion-menu|.
 
 " Always show the signcolumn, otherwise it would shift the text each time
 " diagnostics appear/become resolved.
-if has("nvim-0.5.0")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
+" if has("nvim-0.5.0")
+"   " Recently vim can merge signcolumn and number column into one
+"   set signcolumn=number
+" else
+"   set signcolumn=yes
+" endif
+set signcolumn=yes:1
 
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
@@ -426,28 +470,9 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-" nmap <silent> [g <Plug>(coc-diagnostic-prev)
-" nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -465,13 +490,6 @@ endfunction
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>rf  <Plug>(coc-format-selected)
-nmap <leader>rf  <Plug>(coc-format-selected)
-
 augroup mygroup
   autocmd!
   " Setup formatexpr specified filetype(s).
@@ -479,40 +497,6 @@ augroup mygroup
   " Update signature help on jump placeholder.
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Remap <C-f> and <C-b> for scroll float windows/popups.
-nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of language server.
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
@@ -522,10 +506,6 @@ command! -nargs=? Fold :call CocAction('fold', <f-args>)
 
 " Add `:OrganiseImports` command for organize imports of the current buffer.
 command! -nargs=0 OrganiseImports :call CocAction('runCommand', 'editor.action.organizeImport')
-
-
-" == Tagbar ==
-nnoremap <leader>s :TagbarToggle<CR>
 
 
 " == Black ==
