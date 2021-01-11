@@ -104,7 +104,7 @@ nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 "   <leader>t - Browse list of files in current directory
 "   <leader>g - Search current directory for occurences of given term and close window if no results
 "   <leader>j - Search current directory for occurences of word under cursor
-nmap ; :Denite buffer<CR>
+nmap ` :Denite buffer<CR>
 nmap <leader>t :DeniteProjectDir file/rec<CR>
 nnoremap <leader>g :<C-u>Denite grep:. -no-empty<CR>
 nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
@@ -235,14 +235,16 @@ if dein#load_state('~/.nvim/dein')
   call dein#add('tpope/vim-fugitive')
   call dein#add('mhinz/vim-signify')
 
+  call dein#add('justinmk/vim-sneak')
+
   " Language support
-  " call dein#add('Shougo/deoplete.nvim')
   call dein#add('dense-analysis/ale')
   call dein#add('neoclide/coc.nvim', { 'merged': 0 })
 
   call dein#add('rust-lang/rust.vim')
 
   call dein#add('psf/black')
+  call dein#add('numirias/semshi')
 
   " Syntaxes
   call dein#add('cespare/vim-toml')
