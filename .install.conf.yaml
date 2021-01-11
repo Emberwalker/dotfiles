@@ -27,5 +27,5 @@
     ~/.atom/styles.less: atom/styles.less
 
 - shell:
-    - [bash .scripts/clone_vim.sh, cloning standard vim configs]
     - [bash .scripts/atom_pkgs.sh, updating Atom packages (if possible)]
+    - [bash .scripts/nvim_dein.sh, installing dein for nvim]
