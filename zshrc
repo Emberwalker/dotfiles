@@ -15,19 +15,82 @@ bindkey -e
 zstyle ':completion:*' menu select # select completions with arrow keys
 zstyle ':completion:*' group-name '' # group results by category
 zstyle ':completion:::::' completer _expand _complete _ignored _approximate # enable approximate matches for completion
-
 zstyle :compinstall filename "$HOME/.zshrc"
 
-# Init completion using the cached completions
-autoload -Uz compinit
-typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
-if [ $(date +'%j') != $updated_at ]; then
-  compinit -i
+# Before Plugins setup
+## NVM
+export NVM_DIR="$HOME/.nvm"
+export NVM_COMPLETION=true
+export NVM_LAZY_LOAD=true
+
+# Antibody (package management)
+alias antibody-regen="antibody bundle < ~/.zsh_packages > ~/.zsh_bundle.sh"
+if [[ -f "$HOME/.zsh_bundle.sh" ]]; then
+  source "$HOME/.zsh_bundle.sh"
 else
-  compinit -C -i
+  echo "!! Using dynamically-loaded Antibody. This may be slower. Run 'antibody-regen' to statically generate."
+  source <(antibody init)
+  antibody bundle < "$HOME/.zsh_packages"
 fi
 
-zmodload -i zsh/complist
+# Init completion using the cached completions
+# Based loosely on https://gist.github.com/ctechols/ca1035271ad134841284#gistcomment-2894219
+_init_completions_custom() {
+  # Skip completion if non-interactive
+  if [[ -o interactive ]]; then
+    autoload -Uz compinit
+    setopt extendedglob local_options
+    local zcd="${ZDOTDIR:-$HOME}/.zcompdump"
+    local zcdc="$zcd.zwc"
+    local globbed=($zcd(N.mh-24))
+    # Compile the completion dump to increase startup speed, if dump is newer or doesn't exist,
+    # in the background as this is doesn't affect the current session
+    if (( $#globbed )); then
+          compinit -C -d "$zcd"
+          { [[ ! -f "$zcdc" || "$zcd" -nt "$zcdc" ]] && rm -f "$zcdc" && zcompile "$zcd" } &!
+    else
+          compinit -i -d "$zcd"
+          { rm -f "$zcdc" && zcompile "$zcd" } &!
+    fi
+    zmodload -i zsh/complist
+  fi
+}
+
+_init_completions_custom
+
+# Helpers
+_cmd_exists() {
+  (( $+commands[$1] ))
+  return $?
+}
+
+_alias_to() {
+  for a in $@[2,-1]; do
+    if ! _cmd_exists "$a"; then
+      alias "$a"="$1"
+    fi
+  done
+}
+
+# Cache an eval result for 1 day
+_cache_eval() {
+  # Based very loosely on the above compinit loader and the evalcache plugin
+  setopt extendedglob local_options
+  EVALCACHE_DIR="$HOME/.zsh/evalcache"
+  mkdir -p "$EVALCACHE_DIR"
+  local fname="$EVALCACHE_DIR/$1.zsh"
+  local cfname="$fname.zwc"
+  local fragment="$2"
+  local globbed=($fname(N.mh-24))
+  if (( $#globbed )); then
+    source "$fname"
+    { [[ ! -f "$cfname" || "$fname" -nt "$cfname" ]] && rm -f "$cfname" && zcompile "$fname" } &!
+  else
+    echo "$($=fragment)" > "$fname"
+    source "$fname"
+    { rm -f "$cfname" && zcompile "$fname" } &!
+  fi
+}
 
 # Linuxbrew
 test -d "$HOME/.linuxbrew" && export LINUXBREW_ROOT="$HOME/.linuxbrew"
@@ -45,7 +108,7 @@ if [[ $LINUXBREW_ROOT ]]; then
 fi
 
 # Homebrew/Linuxbrew
-if hash brew 2>/dev/null; then
+if _cmd_exists brew; then
   export HOMEBREW_VERBOSE="true"
 fi
 
@@ -65,13 +128,16 @@ if [[ -d "$HOME/dotfiles/zsh_completions" ]]; then
 fi
 
 # Sensible default env vars
-if hash vim 2>/dev/null; then
-  export EDITOR="$(which vim)"
-fi
-if hash nvim 2>/dev/null; then
+if _cmd_exists nvim; then
   export EDITOR="$(which nvim)"
+  alias nv=nvim
+  alias vim=nvim
+  alias vi=nvim
+elif _cmd_exists vim; then
+  export EDITOR="$(which vim)"
+  alias vi=vim
 fi
-if hash go 2>/dev/null; then
+if _cmd_exists go; then
   export GOPATH="$HOME/go"
   export PATH="$GOPATH/bin:$PATH"
 fi
@@ -79,18 +145,9 @@ if [[ -d "/snap/bin" ]]; then export PATH="/snap/bin:$PATH"; fi
 if [[ -d "$HOME/bin" ]]; then export PATH="$HOME/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code.app" ]]; then export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code - Insiders.app" ]]; then export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"; fi
-if [[ -d "$HOME/.nvm" ]]; then
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-fi
 
-## Jayatana (Unity global menu support for Java apps)
-if [[ $(ps aux | grep unity-panel | wc -l) -gt 1 ]] && [[ -f "/usr/share/java/jayatanaag.jar" ]]; then
-  export JAVA_TOOL_OPTIONS="-javaagent:/usr/share/java/jayatanaag.jar $JAVA_TOOL_OPTIONS"
-fi
 ## Clang/LLVM
-if hash clang 2>/dev/null; then
+if _cmd_exists clang; then
   export CC="clang"
   export CXX="clang++"
   export HOMEBREW_CC="clang"
@@ -108,39 +165,79 @@ if [ -s "$HOME/.jabba/jabba.sh" ]; then
 fi
 
 # GitHub CLI
-if hash gh 2>/dev/null; then
-  eval "$(gh completion -s zsh)"
+if _cmd_exists gh; then
+  _cache_eval gh "gh completion -s zsh"
 fi
 
 # bat, the better cat
-if hash bat 2>/dev/null; then
+if _cmd_exists bat; then
   export BAT_THEME="TwoDark"
   alias cat=bat
 fi
 
 # thefuck
-if hash thefuck 2>/dev/null; then
+if _cmd_exists thefuck; then
   eval "$(thefuck --alias)"
   eval "$(thefuck --alias arse)"
   eval "$(thefuck --alias shit)"
 fi
 
-# Tower Git
-if hash gittower 2>/dev/null && ! hash tower 2>/dev/null; then
-  alias tower=gittower
+# Aliases
+_alias_to kubectl kctl
+_alias_to kubens kns
+_alias_to kubectx kctx
+_alias_to toxiproxy-cli toxi
+
+_alias_to sudo _
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias ls="ls -h"
+else
+  alias ls="ls --color=tty -h"
 fi
 
-# Kubernetes
-if hash kubectl 2>/dev/null; then
-  alias kctl=kubectl
+# Filter out macOS, as that might be confused with the JDK apt tool
+if _cmd_exists apt && [[ "$OSTYPE" != "darwin"* ]]; then alias apt="sudo apt"; fi
+if _cmd_exists pacman; then alias pacman="sudo pacman"; fi
+if _cmd_exists exa; then
+  alias ls="exa"
+  alias la="exa -a"
+  alias ll="exa -la"
 fi
-if hash kubens 2>/dev/null; then
-  alias kns=kubens
-  alias kctx=kubectx
+
+# Git aliases
+if _cmd_exists git; then
+  alias gs="git status"
+  alias gp="git pull"
+  alias gpp="git pull --prune"
+  alias gc="git commit"
+  alias gr="git rebase"
+  alias gri="git rebase -i"
+  alias gm="git merge"
+  alias gco="git checkout"
+
+  gppm() {
+    git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune
+  }
+
+  gpo() {
+    git push -u origin $(git rev-parse --abbrev-ref HEAD)
+  }
 fi
+
+# iTerm tools
+send_notification() {
+  echo -n "\e]9;$1\007"
+}
+
+# Key bindings
+bindkey ";5C" forward-word
+bindkey ";5D" backward-word
+bindkey "^[[3~" delete-char
+bindkey "^[3;5~" delete-char
 
 # Selecta (see https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md)
-if hash selecta 2>/dev/null; then
+if _cmd_exists selecta; then
   # By default, ^S freezes terminal output and ^Q resumes it. Disable that so
   # that those keys can be used for other things.
   unsetopt flowcontrol
@@ -164,21 +261,21 @@ if hash selecta 2>/dev/null; then
 fi
 
 # Pyenv
-if hash pyenv 2>/dev/null; then
-  eval "$(pyenv init -)"
-  if hash pyenv-virtualenv-init 2>/dev/null; then
-    eval "$(pyenv virtualenv-init -)"
+if _cmd_exists pyenv; then
+  _cache_eval pyenv "pyenv init -"
+  if _cmd_exists pyenv-virtualenv-init; then
+    _cache_eval pyenv_virtualenv "pyenv virtualenv-init -"
   fi
 fi
 
 # Pipenv
-if hash pipenv 2>/dev/null; then
-  eval "$(pipenv --completion)"
+if _cmd_exists pipenv; then
+  _cache_eval pipenv "pipenv --completion"
 fi
 
 # Rbenv
-if hash rbenv 2>/dev/null; then
-  eval "$(rbenv init -)"
+if _cmd_exists rbenv; then
+  _cache_eval rbenv "rbenv init -"
 fi
 
 # Virtualenv Wrapper
@@ -202,57 +299,19 @@ fi
 
 # GPG2
 export GPG_TTY=$(tty)
-if hash gpg2-agent 2> /dev/null; then
+if _cmd_exists gpg2-agent; then
   GPG_AGENT="gpg2-agent"
   alias gpg="gpg2" # Sod you old distros
-elif hash gpg-agent 2> /dev/null; then
+elif _cmd_exists gpg-agent; then
   GPG_AGENT="gpg-agent"
 else
   echo "warn: unable to locate gpg(2)-agent -- is GPG installed?"
 fi
 
-if hash toxiproxy-cli 2> /dev/null; then
-  alias toxi="toxiproxy-cli"
-fi
-
 # Theme customisation
-## Bullet Train
-export BULLETTRAIN_PROMPT_CHAR="λ"
-export BULLETTRAIN_PROMPT_SEPARATE_LINE=true
-export BULLETTRAIN_GIT_PROMPT_CMD=\${\$(git_prompt_info)//\\//\ \ }
-export BULLETTRAIN_GIT_COLORIZE_DIRTY=false
-export BULLETTRAIN_GIT_ADDED=" %F{green}✚%F{black}"
-export BULLETTRAIN_GIT_MODIFIED=" %F{red}⚡%F{black}"
-export BULLETTRAIN_GIT_UNTRACKED=" %F{cyan}⛊%F{black}"
-export BULLETTRAIN_EXEC_TIME_SHOW=true
-## Powerlevel9k
-POWERLEVEL9K_INSTALLATION_PATH="$ANTIGEN_BUNDLES/bhilburn/powerlevel9k"
-POWERLEVEL9K_MODE="nerdfont-complete"
-POWERLEVEL9K_STATUS_VERBOSE=false
-POWERLEVEL9K_STATUS_OK_IN_NON_VERBOSE=true
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=''
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%K{white}%F{black} `date +%T` %f%k%F{white}%f "
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh os_icon dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time pyenv java_version time background_jobs status)
-POWERLEVEL9K_OS_ICON_BACKGROUND="white"
-POWERLEVEL9K_OS_ICON_FOREGROUND="blue"
-POWERLEVEL9K_DIR_HOME_FOREGROUND="white"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="white"
-POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="white"
-POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-POWERLEVEL9K_JAVA_ICON="\ue256"
-POWERLEVEL9K_VPN_ICON="\ufa81"
-POWERLEVEL9K_SSH_ICON="\ufc7e"
-POWERLEVEL9K_VCS_UNTRACKED_ICON="\uf128"
-POWERLEVEL9K_VCS_UNSTAGED_ICON="\uf12a"
-POWERLEVEL9K_VCS_STAGED_ICON="\uf44d"
-POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON="\uf63b"
-POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON="\uf63e"
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\ufb26%f "
 ## Geometry
-GEOMETRY_PROMPT_PLUGINS=(exec_time git kube_simplified node virtualenv)
+GEOMETRY_PROMPT_PLUGINS_PRIMARY=(path hostname)
+GEOMETRY_PROMPT_PLUGINS_SECONDARY=(exec_time git kube node virtualenv)
 GEOMETRY_COLOR_PROMPT="white"
 PROMPT_GEOMETRY_GIT_TIME=false
 PROMPT_GEOMETRY_GIT_CONFLICTS=true
@@ -285,76 +344,9 @@ GEOMETRY_SYMBOL_EXIT_VALUE="%F{red}\$(_geometry_prompt_sym)%f"
 GEOMETRY_SYMBOL_PROMPT="\$(_geometry_prompt_sym)"
 GEOMETRY_PROMPT_PATH="\$(_geometry_path)"
 
-# Antibody (package management)
-alias antibody-regen="antibody bundle < ~/.zsh_packages > ~/.zsh_bundle.sh"
-if [[ -f "$HOME/.zsh_bundle.sh" ]]; then
-  source "$HOME/.zsh_bundle.sh"
-else
-  echo "!! Using dynamically-loaded Antibody. This may be slower. Run 'antibody-regen' to statically generate."
-  source <(antibody init)
-  antibody bundle < "$HOME/.zsh_packages"
-fi
-
-# Load custom plugins
-source "$HOME/dotfiles/zsh_plugins/geometry_kube_simplified/plugin.zsh"
-
 # Plugin configs
 FAST_HIGHLIGHT[use_brackets]=1
 
-# Standard-issue aliases
-alias emacs="emacs -nw"
-alias emcs="emacs -nw"
-alias em="emacs -nw"
-alias _="sudo"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  alias ls="ls -h"
-else
-  alias ls="ls --color=tty -h"
-fi
-if hash vim 2>/dev/null; then alias vi="vim"; fi
-if hash nvim 2>/dev/null; then
-  alias nv="nvim"
-  alias vi="nvim"
-  alias vim="nvim"
-fi
-if hash apt 2>/dev/null; then alias apt="sudo apt"; fi
-if hash pacman 2>/dev/null; then alias pacman="sudo pacman"; fi
-if hash firejail 2>/dev/null; then alias jail="firejail"; fi
-if hash exa 2>/dev/null; then
-  alias ls="exa"
-  alias la="exa -a"
-  alias ll="exa -la"
-fi
-if hash tmux 2>/dev/null; then alias tmx="tmux new-session -A -s tmx"; fi
-
-# Git aliases
-alias gs="git status"
-alias gp="git pull"
-alias gpp="git pull --prune"
-alias gc="git commit"
-alias gr="git rebase"
-alias gri="git rebase -i"
-alias gm="git merge"
-alias gco="git checkout"
-
-gppm() {
-  git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune
-}
-
-gpo() {
-  git push -u origin $(git rev-parse --abbrev-ref HEAD)
-}
-
-# iTerm tools
-send_notification() {
-  echo -n "\e]9;$1\007"
-}
-
-# Key bindings
-bindkey ";5C" forward-word
-bindkey ";5D" backward-word
-bindkey "^[[3~" delete-char
-bindkey "^[3;5~" delete-char
 
 # System banner (if present)
 if [[ -f "$HOME/.banner" ]]; then
@@ -375,4 +367,3 @@ then
   "$@"
   set --
 fi
-
