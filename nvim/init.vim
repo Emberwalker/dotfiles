@@ -272,7 +272,7 @@ filetype plugin indent on
 
 " == RipGrep (:Rg) ==
 " Use Smart Case (ignore case if all lower case)
-let g:rg_command = 'rg --vimgrep -S'
+let g:rg_command = 'rg --vimgrep -S --hidden --ignore-file ~/dotfiles/nvim/rg-ignore'
 
 
 " == Rainbow Parens ==
@@ -415,6 +415,7 @@ let g:NERDTreeAutoDeleteBuffer = 1    " Drop buffer if file is deleted
 let g:NERDTreeMinimalUI = 1           " Hide help prompt
 let g:NERDTreeDirArrows = 1           " Show directory arrows
 let g:NERDTreeWinPos = "right"        " Show NERDTree on the right
+let g:NERDTreeShowHidden = 1          " Show hidden files
 
 let g:NERDTreeGitStatusUseNerdFonts = 1
 let g:NERDTreeGitStatusShowIgnored = 1

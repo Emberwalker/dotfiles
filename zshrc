@@ -22,6 +22,7 @@ zstyle :compinstall filename "$HOME/.zshrc"
 export NVM_DIR="$HOME/.nvm"
 export NVM_COMPLETION=true
 export NVM_LAZY_LOAD=true
+export NVM_LAZY_LOAD_EXTRA_COMMANDS=('nvim')
 
 # Antibody (package management)
 alias antibody-regen="antibody bundle < ~/.zsh_packages > ~/.zsh_bundle.sh"
