@@ -16,6 +16,7 @@
     ~/.yabairc: yabairc
     ~/.skhdrc: skhdrc
     ~/.config/nvim/init.vim: nvim/init.vim
+    ~/.config/nvim/lua/cfg/treesitter.lua: nvim/lua/cfg/treesitter.lua
     ~/.gnupg/gpg.conf: gpg.conf
     ~/.gnupg/gpg-agent.conf: gpg-agent.conf
     ~/.virtualenvs/postactivate: virtualenvs/postactivate

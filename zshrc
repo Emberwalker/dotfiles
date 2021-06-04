@@ -21,7 +21,7 @@ zstyle :compinstall filename "$HOME/.zshrc"
 ## NVM
 export NVM_DIR="$HOME/.nvm"
 export NVM_COMPLETION=true
-export NVM_LAZY_LOAD=true
+export NVM_LAZY_LOAD=false
 export NVM_LAZY_LOAD_EXTRA_COMMANDS=('nvim')
 
 # Antibody (package management)
@@ -263,7 +263,8 @@ fi
 
 # Pyenv
 if _cmd_exists pyenv; then
-  _cache_eval pyenv "pyenv init -"
+  _cache_eval pyenv-path "pyenv init --path"
+  _cache_eval pyenv-init "pyenv init -"
   if _cmd_exists pyenv-virtualenv-init; then
     _cache_eval pyenv_virtualenv "pyenv virtualenv-init -"
   fi
@@ -321,9 +322,9 @@ PROMPT_GEOMETRY_COLORIZE_ROOT=true
 setopt PROMPT_SUBST
 function _geometry_prompt_sym() {
   if git rev-parse --show-toplevel > /dev/null 2>&1; then
-    echo "⇋ "
+    echo "⇋"
   else
-    echo "△ "
+    echo "△"
   fi
 }
 function _geometry_path() {

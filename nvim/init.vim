@@ -16,6 +16,10 @@ set mouse=a                         " Enable mouse mode
 
 
 " == General (Before Plugins) ==
+" Neovide GUI settings
+let g:neovide_transparency=0.925
+set guifont=Cascadia\ Code:h14
+
 " Helper to make sure a directory exists
 function! EnsureExists(path)
   if !isdirectory(expand(a:path))
@@ -27,6 +31,7 @@ set nomodeline        " modelines are an insecure feature
 set ignorecase        " ignore case for searching
 set smartcase         " do case-sensitive if there's a capital letter
 set showmatch         " automatically highlight matching braces/brackets/etc.
+set scrolloff=3       " keep 3 lines visible above/below cursor
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience. Needed by Signify/coc.nvim.
@@ -77,6 +82,9 @@ inoremap <C-k> <C-o>gk
 " smash escape
 inoremap jk <esc>
 inoremap kj <esc>
+
+" use D for d with black hole register
+nnoremap D "_d
 
 " split resize
 " height
@@ -176,6 +184,10 @@ if $SHELL =~ '/fish$'
   set shell=bash
 endif
 
+if $TERM =~ '^\(tmux\|iterm\|vte\|gnome\|screen-256color\)\(-.*\)\?$'
+  set termguicolors
+endif
+
 " restore last known location
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 " trim trailing whitespace on save
@@ -206,18 +218,25 @@ if dein#load_state('~/.nvim/dein')
   call dein#add('~/.nvim/dein/repos/github.com/Shougo/dein.vim')
   call dein#add('wsdjeg/dein-ui.vim')
 
+  " Tree Sitter (must be before colourschemes)
+  call dein#add('nvim-treesitter/nvim-treesitter', { 'hook_post_source': ':TSUpdate' })
+  call dein#add('p00f/nvim-ts-rainbow')
+
   " essentials
-  call dein#add('danilo-augusto/vim-afterglow')
+  " call dein#add('danilo-augusto/vim-afterglow')
+  call dein#add('savq/melange')
 
   call dein#add('qpkorr/vim-bufkill')
-  call dein#add('junegunn/rainbow_parentheses.vim')
   call dein#add('Yggdroot/indentLine')
   call dein#add('tpope/vim-sleuth')
   call dein#add('ryanoasis/vim-devicons')
-  call dein#add('Shougo/denite.nvim')
   call dein#add('liuchengxu/vim-which-key')
   call dein#add('jeffkreeftmeijer/vim-numbertoggle')
   call dein#add('mhinz/vim-startify')
+
+  call dein#add('nvim-lua/popup.nvim')
+  call dein#add('nvim-lua/plenary.nvim')
+  call dein#add('nvim-telescope/telescope.nvim')
 
   call dein#add('preservim/tagbar')
   call dein#add('preservim/nerdtree')
@@ -244,10 +263,9 @@ if dein#load_state('~/.nvim/dein')
   call dein#add('rust-lang/rust.vim')
 
   call dein#add('psf/black')
-  call dein#add('numirias/semshi')
 
   " Syntaxes
-  call dein#add('cespare/vim-toml')
+  " call dein#add('cespare/vim-toml')
 
   call dein#end()
   call dein#save_state()
@@ -263,20 +281,24 @@ endif
 
 
 " == General (Post-Plugins) ==
-let g:afterglow_inherit_background=1
-colorscheme afterglow
+set background=dark
+au ColorScheme * hi Normal ctermbg=none guibg=none
+colorscheme melange
 
 syntax enable
 filetype plugin indent on
 
 
+" == TreeSitter ==
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+lua require('cfg/treesitter')
+autocmd Syntax * normal zR
+
+
 " == RipGrep (:Rg) ==
 " Use Smart Case (ignore case if all lower case)
 let g:rg_command = 'rg --vimgrep -S --hidden --ignore-file ~/dotfiles/nvim/rg-ignore'
-
-
-" == Rainbow Parens ==
-autocmd VimEnter * RainbowParentheses
 
 
 " == Indent Guides ==
@@ -285,125 +307,11 @@ let g:indentLine_bufTypeExclude = ['help', 'terminal']
 let g:indentLine_bufNameExclude = ['NERD_tree.*']
 
 
-" == Denite ==
-" FROM: https://www.freecodecamp.org/news/a-guide-to-modern-web-development-with-neo-vim-333f7efbf8e2/
-" Use ripgrep for searching current directory for files
-" By default, ripgrep will respect rules in .gitignore
-"   --files: Print each file that would be searched (but don't search)
-"   --glob:  Include or exclues files for searching that match the given glob
-"            (aka ignore .git files)
-call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
-
-" Use ripgrep in place of "grep"
-call denite#custom#var('grep', 'command', ['rg'])
-
-" Custom options for ripgrep
-"   --vimgrep:  Show results with every match on it's own line
-"   --hidden:   Search hidden directories and files
-"   --heading:  Show the file name above clusters of matches from each file
-"   --S:        Search case insensitively if the pattern is all lowercase
-call denite#custom#var('grep', 'default_opts', ['--hidden', '--vimgrep', '--heading', '-S'])
-
-" Recommended defaults for ripgrep via Denite docs
-call denite#custom#var('grep', 'recursive_opts', [])
-call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-call denite#custom#var('grep', 'separator', ['--'])
-call denite#custom#var('grep', 'final_opts', [])
-
-" Remove date from buffer list
-call denite#custom#var('buffer', 'date_format', '')
-
-" Custom options for Denite
-"   auto_resize             - Auto resize the Denite window height automatically.
-"   prompt                  - Customize denite prompt
-"   direction               - Specify Denite window direction as directly below current pane
-"   winminheight            - Specify min height for Denite window
-"   highlight_mode_insert   - Specify h1-CursorLine in insert mode
-"   prompt_highlight        - Specify color of prompt
-"   highlight_matched_char  - Matched characters highlight
-"   highlight_matched_range - matched range highlight
-let s:denite_options = {'default' : {
-\ 'split': 'floating',
-\ 'start_filter': 1,
-\ 'auto_resize': 1,
-\ 'source_names': 'short',
-\ 'prompt': 'λ ',
-\ 'highlight_matched_char': 'QuickFixLine',
-\ 'highlight_matched_range': 'Visual',
-\ 'highlight_window_background': 'Visual',
-\ 'highlight_filter_background': 'DiffAdd',
-\ 'winrow': 1,
-\ 'vertical_preview': 1
-\ }}
-
-" Loop through denite options and enable them
-function! s:profile(opts) abort
-  for l:fname in keys(a:opts)
-    for l:dopt in keys(a:opts[l:fname])
-      call denite#custom#option(l:fname, l:dopt, a:opts[l:fname][l:dopt])
-    endfor
-  endfor
-endfunction
-
-call s:profile(s:denite_options)
-
-" Define mappings while in 'filter' mode
-"   <C-o>         - Switch to normal mode inside of search results
-"   <Esc>         - Exit denite window in any mode
-"   <CR>          - Open currently selected file in any mode
-"   <C-t>         - Open currently selected file in a new tab
-"   <C-v>         - Open currently selected file a vertical split
-"   <C-h>         - Open currently selected file in a horizontal split
-autocmd FileType denite-filter call s:denite_filter_my_settings()
-function! s:denite_filter_my_settings() abort
-  imap <silent><buffer> <C-o>
-  \ <Plug>(denite_filter_quit)
-  inoremap <silent><buffer><expr> <Esc>
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> <Esc>
-  \ denite#do_map('quit')
-  inoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  inoremap <silent><buffer><expr> <C-t>
-  \ denite#do_map('do_action', 'tabopen')
-  inoremap <silent><buffer><expr> <C-v>
-  \ denite#do_map('do_action', 'vsplit')
-  inoremap <silent><buffer><expr> <C-h>
-  \ denite#do_map('do_action', 'split')
-endfunction
-
-" Define mappings while in denite window
-"   <CR>        - Opens currently selected file
-"   q or <Esc>  - Quit Denite window
-"   d           - Delete currenly selected file
-"   p           - Preview currently selected file
-"   <C-o> or i  - Switch to insert mode inside of filter prompt
-"   <C-t>       - Open currently selected file in a new tab
-"   <C-v>       - Open currently selected file a vertical split
-"   <C-h>       - Open currently selected file in a horizontal split
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> q
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> <Esc>
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> d
-  \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-  \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> i
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <C-o>
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <C-t>
-  \ denite#do_map('do_action', 'tabopen')
-  nnoremap <silent><buffer><expr> <C-v>
-  \ denite#do_map('do_action', 'vsplit')
-  nnoremap <silent><buffer><expr> <C-h>
-  \ denite#do_map('do_action', 'split')
-endfunction
+" == Telescope ==
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 
 " == NERDTree ==
@@ -442,7 +350,19 @@ let g:startify_banner_ascii = [
   \ '        ___\///////////_________\/////_____\////////\//__\///______________\/////____\///_____\///________\////________',
   \ '' ]
 let g:startify_custom_header = 'startify#pad(g:startify_banner_ascii + startify#fortune#boxed())'
-
+let g:startify_lists = [
+  \ { 'type': 'commands',  'header': ['   Commands']       },
+  \ { 'type': 'files',     'header': ['   MRU']            },
+  \ { 'type': 'dir',       'header': ['   MRU '. getcwd()] },
+  \ { 'type': 'sessions',  'header': ['   Sessions']       },
+  \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+  \ ]
+let g:startify_commands = [
+  \ ['Find Files', 'Telescope find_files'],
+  \ ['Buffers', 'Telescope buffer'],
+  \ ['Find Help', 'Telescope help_tags'],
+  \ ]
+let g:startify_change_to_vcs_root = 1
 
 " == CoC ==
 set hidden        " TextEdit might fail if hidden is not set.
