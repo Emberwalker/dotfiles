@@ -233,6 +233,7 @@ if dein#load_state('~/.nvim/dein')
   call dein#add('liuchengxu/vim-which-key')
   call dein#add('jeffkreeftmeijer/vim-numbertoggle')
   call dein#add('mhinz/vim-startify')
+  call dein#add('wfxr/minimap.vim')
 
   call dein#add('nvim-lua/popup.nvim')
   call dein#add('nvim-lua/plenary.nvim')
@@ -294,6 +295,14 @@ set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
 lua require('cfg/treesitter')
 autocmd Syntax * normal zR
+
+
+" == Minimap ==
+let g:minimap_width = 20
+let g:minimap_auto_start = 1
+let g:minimap_auto_start_win_enter = 1
+let g:minimap_highlight_range = 1
+let g:minimap_highlight = 'Visual'
 
 
 " == RipGrep (:Rg) ==
