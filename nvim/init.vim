@@ -16,6 +16,9 @@ set mouse=a                         " Enable mouse mode
 
 
 " == General (Before Plugins) ==
+" We only ever call Neovim from a color terminal
+set termguicolors
+
 " Neovide GUI settings
 let g:neovide_transparency=0.925
 set guifont=Cascadia\ Code:h14
@@ -224,7 +227,9 @@ if dein#load_state('~/.nvim/dein')
 
   " essentials
   " call dein#add('danilo-augusto/vim-afterglow')
-  call dein#add('savq/melange')
+  " call dein#add('savq/melange')
+  " call dein#add('mhartington/oceanic-next')
+  call dein#add('Luxed/ayu-vim')
 
   call dein#add('qpkorr/vim-bufkill')
   call dein#add('Yggdroot/indentLine')
@@ -233,7 +238,7 @@ if dein#load_state('~/.nvim/dein')
   call dein#add('liuchengxu/vim-which-key')
   call dein#add('jeffkreeftmeijer/vim-numbertoggle')
   call dein#add('mhinz/vim-startify')
-  call dein#add('wfxr/minimap.vim')
+  " call dein#add('wfxr/minimap.vim')
 
   call dein#add('nvim-lua/popup.nvim')
   call dein#add('nvim-lua/plenary.nvim')
@@ -283,8 +288,18 @@ endif
 
 " == General (Post-Plugins) ==
 set background=dark
-au ColorScheme * hi Normal ctermbg=none guibg=none
-colorscheme melange
+
+au ColorScheme * hi Normal guibg=NONE ctermbg=NONE
+au ColorScheme * hi LineNr guibg=NONE ctermbg=NONE
+au ColorScheme * hi SignColumn guibg=NONE ctermbg=NONE
+au ColorScheme * hi EndOfBuffer guibg=NONE ctermbg=NONE
+
+" let g:oceanic_next_terminal_bold = 1
+" let g:oceanic_next_terminal_italic = 1
+" colorscheme OceanicNext
+
+let g:ayucolor="dark"
+colorscheme ayu
 
 syntax enable
 filetype plugin indent on
@@ -298,11 +313,11 @@ autocmd Syntax * normal zR
 
 
 " == Minimap ==
-let g:minimap_width = 20
-let g:minimap_auto_start = 1
-let g:minimap_auto_start_win_enter = 1
-let g:minimap_highlight_range = 1
-let g:minimap_highlight = 'Visual'
+" let g:minimap_width = 20
+" let g:minimap_auto_start = 1
+" let g:minimap_auto_start_win_enter = 1
+" let g:minimap_highlight_range = 1
+" let g:minimap_highlight = 'Visual'
 
 
 " == RipGrep (:Rg) ==

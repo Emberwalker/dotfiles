@@ -9,6 +9,7 @@
 - link:
     ~/.antigen.zsh: .antigen.zsh
     ~/.zshrc: zshrc
+    ~/.p10k.zsh: p10k.zsh
     ~/.zsh_packages: zsh_packages
     ~/.config/fish: fish
     ~/.tmux.conf: tmuxrc
@@ -20,13 +21,6 @@
     ~/.gnupg/gpg.conf: gpg.conf
     ~/.gnupg/gpg-agent.conf: gpg-agent.conf
     ~/.virtualenvs/postactivate: virtualenvs/postactivate
-    ~/.atom/config.cson: atom/config.cson
-    ~/.atom/init.coffee: atom/init.coffee
-    ~/.atom/keymap.cson: atom/keymap.cson
-    ~/.atom/pkgs: atom/pkgs
-    ~/.atom/snippets.cson: atom/snippets.cson
-    ~/.atom/styles.less: atom/styles.less
 
 - shell:
-    - [bash .scripts/atom_pkgs.sh, updating Atom packages (if possible)]
     - [bash .scripts/nvim_dein.sh, installing dein for nvim]
