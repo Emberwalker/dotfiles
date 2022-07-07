@@ -82,7 +82,7 @@ fi
 HISTFILE="$ZDOTDIR/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
-setopt append_history auto_cd extended_glob share_history correct_all auto_list auto_menu always_to_end
+setopt append_history auto_cd extended_glob share_history correct_all auto_list auto_menu always_to_end hist_ignore_space
 unsetopt correct correct_all
 bindkey -e
 
@@ -95,7 +95,7 @@ zstyle :compinstall filename "$ZDOTDIR/.zshrc"
 ## NVM
 export NVM_DIR="$HOME/.nvm"
 export NVM_COMPLETION=true
-export NVM_LAZY_LOAD=false
+export NVM_LAZY_LOAD=true
 export NVM_LAZY_LOAD_EXTRA_COMMANDS=('nvim')
 
 # Init completion using the cached completions
@@ -143,6 +143,11 @@ if _cmd_exists brew; then
   export HOMEBREW_VERBOSE="true"
 fi
 
+# Krew for kubectl
+if [[ -d "$HOME/.krew/bin" ]]; then
+  export PATH="${HOME}/.krew/bin:${PATH}"
+fi
+
 # Cargo
 if [[ -d "$HOME/.cargo/bin" ]]; then
   export PATH="$HOME/.cargo/bin:$PATH"
@@ -174,8 +179,8 @@ if _cmd_exists go; then
 fi
 if [[ -d "/snap/bin" ]]; then export PATH="/snap/bin:$PATH"; fi
 if [[ -d "$HOME/bin" ]]; then export PATH="$HOME/bin:$PATH"; fi
-if [[ -d "/Applications/Visual Studio Code.app" ]]; then export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"; fi
 if [[ -d "/Applications/Visual Studio Code - Insiders.app" ]]; then export PATH="/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:$PATH"; fi
+if [[ -d "/Applications/Visual Studio Code.app" ]]; then export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"; fi
 
 ## Clang/LLVM
 if _cmd_exists clang; then
@@ -185,114 +190,6 @@ if _cmd_exists clang; then
   export HOMEBREW_CXX="clang++"
 fi
 
-# Jabba (Java version management)
-if [ -s "$HOME/.jabba/jabba.sh" ]; then
-  source "$HOME/.jabba/jabba.sh"
-
-  function __jabba_on_cd() {
-    [[ -f "./.jabbarc" ]] && echo "\n☕️⚡️ Setting Jabba JDK from .jabbarc in $PWD: $(cat .jabbarc | tr -d "\n")" && jabba use
-  }
-  chpwd_functions=(${chpwd_functions[@]} "__jabba_on_cd")
-fi
-
-# GitHub CLI
-if _cmd_exists gh; then
-  _cache_eval gh "gh completion -s zsh"
-fi
-
-# bat, the better cat
-if _cmd_exists bat; then
-  export BAT_THEME="TwoDark"
-  alias cat=bat
-fi
-
-# thefuck
-if _cmd_exists thefuck; then
-  eval "$(thefuck --alias)"
-  eval "$(thefuck --alias arse)"
-  eval "$(thefuck --alias shit)"
-fi
-
-# Aliases
-_alias_to kubectl k
-_alias_to kubectl kctl
-_alias_to kubens kns
-_alias_to kubectx kctx
-_alias_to toxiproxy-cli toxi
-
-_alias_to sudo _
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  alias ls="ls -h"
-else
-  alias ls="ls --color=tty -h"
-fi
-
-# Filter out macOS, as that might be confused with the JDK apt tool
-if _cmd_exists apt && [[ "$OSTYPE" != "darwin"* ]]; then alias apt="sudo apt"; fi
-if _cmd_exists pacman; then alias pacman="sudo pacman"; fi
-if _cmd_exists zoxide; then eval "$(zoxide init zsh)"; fi
-if _cmd_exists exa; then
-  alias ls="exa"
-  alias la="exa -a"
-  alias ll="exa -la"
-fi
-
-# Git aliases
-if _cmd_exists git; then
-  alias gs="git status"
-  alias gp="git pull"
-  alias gpp="git pull --prune"
-  alias gc="git commit"
-  alias gr="git rebase"
-  alias gri="git rebase -i"
-  alias gm="git merge"
-  alias gco="git checkout"
-
-  gppm() {
-    git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune
-  }
-
-  gpo() {
-    git push -u origin $(git rev-parse --abbrev-ref HEAD)
-  }
-fi
-
-# iTerm tools
-send_notification() {
-  echo -n "\e]9;$1\007"
-}
-
-# Key bindings
-bindkey ";5C" forward-word
-bindkey ";5D" backward-word
-bindkey "^[[3~" delete-char
-bindkey "^[3;5~" delete-char
-
-# Selecta (see https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md)
-if _cmd_exists selecta; then
-  # By default, ^S freezes terminal output and ^Q resumes it. Disable that so
-  # that those keys can be used for other things.
-  unsetopt flowcontrol
-  # Run Selecta in the current working directory, appending the selected path, if
-  # any, to the current command, followed by a space.
-  function insert-selecta-path-in-command-line() {
-      local selected_path
-      # Print a newline or we'll clobber the old prompt.
-      echo
-      # Find the path; abort if the user doesn't select anything.
-      selected_path=$(find * -type f | selecta) || return
-      # Append the selection to the current command buffer.
-      eval 'LBUFFER="$LBUFFER$selected_path "'
-      # Redraw the prompt since Selecta has drawn several new lines of text.
-      zle reset-prompt
-  }
-  # Create the zle widget
-  zle -N insert-selecta-path-in-command-line
-  # Bind the key to the newly created widget
-  bindkey "^S" "insert-selecta-path-in-command-line"
-fi
-
 # Pyenv
 if _cmd_exists pyenv; then
   _cache_eval pyenv-path "pyenv init --path"
@@ -300,11 +197,6 @@ if _cmd_exists pyenv; then
   if _cmd_exists pyenv-virtualenv-init; then
     _cache_eval pyenv_virtualenv "pyenv virtualenv-init -"
   fi
-fi
-
-# Pipenv
-if _cmd_exists pipenv; then
-  _cache_eval pipenv "pipenv --completion"
 fi
 
 # Rbenv
@@ -331,10 +223,135 @@ if [[ -d "$HOME/.poetry/bin" ]]; then
   export PATH="$HOME/.poetry/bin:$PATH"
 fi
 
-# local profile
-if [[ -f "$HOME/.zshrc.local" ]]; then
-  source "$HOME/.zshrc.local"
+# Jabba (Java version management)
+if [ -s "$HOME/.jabba/jabba.sh" ]; then
+  source "$HOME/.jabba/jabba.sh"
+
+  function __jabba_on_cd() {
+    [[ -f "./.jabbarc" ]] && echo "\n☕️⚡️ Setting Jabba JDK from .jabbarc in $PWD: $(cat .jabbarc | tr -d "\n")" && jabba use
+  }
+  chpwd_functions=(${chpwd_functions[@]} "__jabba_on_cd")
 fi
+
+# Skip unnecessary bits for interactive shells
+if [[ -o INTERACTIVE ]]; then
+
+  # GitHub CLI
+  if _cmd_exists gh; then
+    _cache_eval gh "gh completion -s zsh"
+    alias prc="gh pr create"
+    alias prs="gh pr status"
+    alias prv="gh pr view"
+    alias prw="gh pr view --web"
+    alias prsc="gh pr checks"
+    alias prm="gh pr merge -d"
+    function prd() {
+      gh pr diff --patch $1 | delta
+    }
+  fi
+
+  # bat, the better cat
+  if _cmd_exists bat; then
+    export BAT_THEME="TwoDark"
+    alias cat=bat
+  fi
+
+  # thefuck
+  if _cmd_exists thefuck; then
+    eval "$(thefuck --alias)"
+    eval "$(thefuck --alias arse)"
+    eval "$(thefuck --alias shit)"
+  fi
+
+  # Aliases
+  _alias_to kubectl k
+  _alias_to kubectl kctl
+  _alias_to kubens kns
+  _alias_to kubectx kctx
+  _alias_to toxiproxy-cli toxi
+
+  _alias_to sudo _
+
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias ls="ls -h"
+  else
+    alias ls="ls --color=tty -h"
+  fi
+
+  # Filter out macOS, as that might be confused with the JDK apt tool
+  if _cmd_exists apt && [[ "$OSTYPE" != "darwin"* ]]; then alias apt="sudo apt"; fi
+  if _cmd_exists pacman; then alias pacman="sudo pacman"; fi
+  if _cmd_exists zoxide; then eval "$(zoxide init zsh)"; fi
+  if _cmd_exists exa; then
+    alias ls="exa"
+    alias la="exa -a"
+    alias ll="exa -la"
+  fi
+
+  # Git aliases
+  if _cmd_exists git; then
+    alias gs="git status"
+    alias gd="git diff"
+    alias gp="git pull"
+    alias gpp="git pull --prune"
+    alias gc="git commit"
+    alias gr="git rebase"
+    alias gri="git rebase -i"
+    alias gm="git merge"
+    alias gco="git checkout"
+
+    gppm() {
+      git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune
+    }
+
+    gpo() {
+      git push -u origin $(git rev-parse --abbrev-ref HEAD)
+    }
+
+    if _cmd_exists delta; then
+      alias gdd="git diff --no-ext-diff | delta"
+    fi
+  fi
+
+  # iTerm tools
+  send_notification() {
+    echo -n "\e]9;$1\007"
+  }
+
+  # Key bindings
+  bindkey ";5C" forward-word
+  bindkey ";5D" backward-word
+  bindkey "^[[3~" delete-char
+  bindkey "^[3;5~" delete-char
+
+  # Selecta (see https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md)
+  if _cmd_exists selecta; then
+    # By default, ^S freezes terminal output and ^Q resumes it. Disable that so
+    # that those keys can be used for other things.
+    unsetopt flowcontrol
+    # Run Selecta in the current working directory, appending the selected path, if
+    # any, to the current command, followed by a space.
+    function insert-selecta-path-in-command-line() {
+        local selected_path
+        # Print a newline or we'll clobber the old prompt.
+        echo
+        # Find the path; abort if the user doesn't select anything.
+        selected_path=$(find * -type f | selecta) || return
+        # Append the selection to the current command buffer.
+        eval 'LBUFFER="$LBUFFER$selected_path "'
+        # Redraw the prompt since Selecta has drawn several new lines of text.
+        zle reset-prompt
+    }
+    # Create the zle widget
+    zle -N insert-selecta-path-in-command-line
+    # Bind the key to the newly created widget
+    bindkey "^S" "insert-selecta-path-in-command-line"
+  fi
+
+  # To customize prompt, run `p10k configure` or edit ~/tmp/zsh/.p10k.zsh.
+  [[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
+
+fi # End of Interactive block
 
 # eval (http://superuser.com/a/230090)
 # Invoke with 'zsh -is eval 'commandhere''
@@ -344,5 +361,7 @@ then
   set --
 fi
 
-# To customize prompt, run `p10k configure` or edit ~/tmp/zsh/.p10k.zsh.
-[[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
+# local profile
+if [[ -f "$HOME/.zshrc.local" ]]; then
+  source "$HOME/.zshrc.local"
+fi
