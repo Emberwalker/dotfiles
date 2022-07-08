@@ -44,6 +44,22 @@ _cache_eval() {
   fi
 }
 
+# Homebrew/Linuxbrew - this is set up early for GPG/Antibody
+test -d "$HOME/.linuxbrew" && export HOMEBREW_ROOT="$HOME/.linuxbrew"
+test -d "/home/linuxbrew/.linuxbrew" && export HOMEBREW_ROOT="/home/linuxbrew/.linuxbrew"
+test -d "/opt/homebrew" && export HOMEBREW_ROOT="/opt/homebrew"
+
+if [[ -d "$HOMEBREW_ROOT" ]]; then
+  export PATH="$HOMEBREW_ROOT/bin:$HOMEBREW_ROOT/sbin:$PATH"
+  export MANPATH="$HOMEBREW_ROOT/share/man:$MANPATH"
+  export INFOPATH="$HOMEBREW_ROOT/share/info:$INFOPATH"
+
+  # GOROOT
+  if [[ -d "$HOMEBREW_ROOT/opt/go/libexec/bin" ]]; then
+    export PATH="$HOMEBREW_ROOT/opt/go/libexec/bin:$PATH"
+  fi
+fi
+
 # Antibody (package management)
 alias antibody-regen="antibody bundle < '$ZDOTDIR/.zsh_packages' > '$ZDOTDIR/.zsh_bundle.sh'"
 if [[ -f "$ZDOTDIR/.zsh_bundle.sh" ]]; then
@@ -52,13 +68,6 @@ else
   echo "!! Using dynamically-loaded Antibody. This may be slower. Run 'antibody-regen' to statically generate."
   source <(antibody init)
   antibody bundle < "$ZDOTDIR/.zsh_packages"
-fi
-
-# System banner (if present)
-if [[ -f "$HOME/.banner" ]]; then
-  RELEASE=$(lsb_release -ds 2>/dev/null || printf "unknown")
-  KERNEL=$(cat /proc/version_signature 2>/dev/null || cat /proc/version 2>/dev/null || printf "unknown")
-  cat "$HOME/.banner" | sed -e "s/@RELEASE@/$RELEASE/" -e "s/@KERNEL@/$KERNEL/"
 fi
 
 # GPG2
@@ -92,11 +101,6 @@ zstyle ':completion:::::' completer _expand _complete _ignored _approximate # en
 zstyle :compinstall filename "$ZDOTDIR/.zshrc"
 
 # Before Plugins setup
-## NVM
-export NVM_DIR="$HOME/.nvm"
-export NVM_COMPLETION=true
-export NVM_LAZY_LOAD=true
-export NVM_LAZY_LOAD_EXTRA_COMMANDS=('nvim')
 
 # Init completion using the cached completions
 # Based loosely on https://gist.github.com/ctechols/ca1035271ad134841284#gistcomment-2894219
@@ -122,21 +126,6 @@ _init_completions_custom() {
 }
 
 _init_completions_custom
-
-# Linuxbrew
-test -d "$HOME/.linuxbrew" && export LINUXBREW_ROOT="$HOME/.linuxbrew"
-test -d "/home/linuxbrew/.linuxbrew" && export LINUXBREW_ROOT="/home/linuxbrew/.linuxbrew"
-
-if [[ $LINUXBREW_ROOT ]]; then
-  export PATH="$LINUXBREW_ROOT/bin:$PATH"
-  export MANPATH="$LINUXBREW_ROOT/share/man:$MANPATH"
-  export INFOPATH="$LINUXBREW_ROOT/share/info:$INFOPATH"
-
-  # GOROOT
-  if [[ -d "$LINUXBREW_ROOT/opt/go/libexec/bin" ]]; then
-    export PATH="$LINUXBREW_ROOT/opt/go/libexec/bin:$PATH"
-  fi
-fi
 
 # Homebrew/Linuxbrew
 if _cmd_exists brew; then
@@ -190,20 +179,6 @@ if _cmd_exists clang; then
   export HOMEBREW_CXX="clang++"
 fi
 
-# Pyenv
-if _cmd_exists pyenv; then
-  _cache_eval pyenv-path "pyenv init --path"
-  _cache_eval pyenv-init "pyenv init -"
-  if _cmd_exists pyenv-virtualenv-init; then
-    _cache_eval pyenv_virtualenv "pyenv virtualenv-init -"
-  fi
-fi
-
-# Rbenv
-if _cmd_exists rbenv; then
-  _cache_eval rbenv "rbenv init -"
-fi
-
 # Virtualenv Wrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/dev/python
@@ -223,18 +198,15 @@ if [[ -d "$HOME/.poetry/bin" ]]; then
   export PATH="$HOME/.poetry/bin:$PATH"
 fi
 
-# Jabba (Java version management)
-if [ -s "$HOME/.jabba/jabba.sh" ]; then
-  source "$HOME/.jabba/jabba.sh"
-
-  function __jabba_on_cd() {
-    [[ -f "./.jabbarc" ]] && echo "\n☕️⚡️ Setting Jabba JDK from .jabbarc in $PWD: $(cat .jabbarc | tr -d "\n")" && jabba use
-  }
-  chpwd_functions=(${chpwd_functions[@]} "__jabba_on_cd")
-fi
-
 # Skip unnecessary bits for interactive shells
 if [[ -o INTERACTIVE ]]; then
+
+  # System banner (if present and populated)
+  if [[ -s "$HOME/.banner" ]]; then
+    RELEASE=$(lsb_release -ds 2>/dev/null || printf "unknown")
+    KERNEL=$(cat /proc/version_signature 2>/dev/null || cat /proc/version 2>/dev/null || printf "unknown")
+    cat "$HOME/.banner" | sed -e "s/@RELEASE@/$RELEASE/" -e "s/@KERNEL@/$KERNEL/"
+  fi
 
   # GitHub CLI
   if _cmd_exists gh; then
@@ -247,6 +219,11 @@ if [[ -o INTERACTIVE ]]; then
     alias prm="gh pr merge -d"
     function prd() {
       gh pr diff --patch $1 | delta
+    }
+    function ghclone() {
+      local target="$HOME/ghdev/$1"
+      [[ -d "$target" ]] || mkdir -p "$target"
+      git clone "git@github.com:$1.git" "$target"
     }
   fi
 
@@ -365,3 +342,6 @@ fi
 if [[ -f "$HOME/.zshrc.local" ]]; then
   source "$HOME/.zshrc.local"
 fi
+
+# Load asdf
+[[ -d "$HOMEBREW_ROOT" && -f "$HOMEBREW_ROOT/opt/asdf/libexec/asdf.sh" ]] && source "$HOMEBREW_ROOT/opt/asdf/libexec/asdf.sh"

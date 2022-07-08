@@ -264,7 +264,7 @@ if dein#load_state('~/.nvim/dein')
 
   " Language support
   call dein#add('dense-analysis/ale')
-  call dein#add('neoclide/coc.nvim', { 'merged': 0 })
+  call dein#add('neoclide/coc.nvim', { 'merged': 0, 'rev': 'release' })
 
   call dein#add('rust-lang/rust.vim')
 
