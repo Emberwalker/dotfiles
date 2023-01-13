@@ -11,7 +11,7 @@
     ~/.zshrc: zshrc
     ~/.p10k.zsh: p10k.zsh
     ~/.zsh_packages: zsh_packages
-    ~/.config/fish: fish
+    ~/.config/starship.toml: starship.toml
     ~/.tmux.conf: tmuxrc
     ~/.vimrc: vimrc
     ~/.yabairc: yabairc
