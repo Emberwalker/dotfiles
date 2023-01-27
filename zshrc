@@ -61,13 +61,11 @@ if [[ -d "$HOMEBREW_ROOT" ]]; then
 fi
 
 # Antibody (package management)
-alias antibody-regen="antibody bundle < '$ZDOTDIR/.zsh_packages' > '$ZDOTDIR/.zsh_bundle.sh'"
-if [[ -f "$ZDOTDIR/.zsh_bundle.sh" ]]; then
-  source "$ZDOTDIR/.zsh_bundle.sh"
+if [[ -d "$HOMEBREW_ROOT" ]] && [[ -f "$HOMEBREW_ROOT/opt/antidote/share/antidote/antidote.zsh" ]]; then
+  source "$HOMEBREW_ROOT/opt/antidote/share/antidote/antidote.zsh"
+  antidote load
 else
-  echo "!! Using dynamically-loaded Antibody. This may be slower. Run 'antibody-regen' to statically generate."
-  source <(antibody init)
-  antibody bundle < "$ZDOTDIR/.zsh_packages"
+  echo "!! Antidote not found from Homebrew; install it with: brew install antidote"
 fi
 
 # GPG2
