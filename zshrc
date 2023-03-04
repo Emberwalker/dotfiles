@@ -130,6 +130,11 @@ if _cmd_exists brew; then
   export HOMEBREW_VERBOSE="true"
 fi
 
+# Arkade
+if [[ -d "$HOME/.arkade/bin" ]]; then
+  export PATH="${HOME}/.krew/bin:${PATH}"
+fi
+
 # Krew for kubectl
 if [[ -d "$HOME/.krew/bin" ]]; then
   export PATH="${HOME}/.krew/bin:${PATH}"
