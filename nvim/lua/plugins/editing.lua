@@ -203,26 +203,49 @@ return {
             --  Check out: https://github.com/echasnovski/mini.nvim
         end,
     },
-    
+
     { -- Jumping around files
-        'easymotion/vim-easymotion',
-        opts = {},
-        config = function()
-            vim.g.EasyMotion_do_mapping = 0
-            vim.g.EasyMotion_smartcase = 1
-            vim.g.EasyMotion_startofline = 1
-            vim.g.EasyMotion_prompt = ''
-            vim.g.EasyMotion_verbose = not vim.g.vscode
-
-            local map = vim.keymap.set
-
-            map('n', 's', '<Plug>(easymotion-s2)', { desc = 'EasyMotion jump to occurence of 2 chars' })
-
-            map('', '/', '<Plug>(easymotion-sn)', { desc = 'EasyMotion incremental search' })
-            map('o', '/', '<Plug>(easymotion-sn)', { desc = 'EasyMotion incremental search' })
-
-            map('', '<Leader>j', '<Plug>(easymotion-j)', { desc = 'EasyMotion jump lines down' })
-            map('', '<Leader>k', '<Plug>(easymotion-k)', { desc = 'EasyMotion jump lines up' })
-        end,
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        ---@type Flash.Config
+        opts = {
+            labels = "asdfghjklqwertyuiopzxcvbnm",
+            label = {
+                rainbow = {
+                    enabled = false,
+                },
+            },
+            char = {
+                search = {
+                    wrap = true,
+                },
+            },
+        },
+        -- stylua: ignore
+        keys = {
+            { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+            { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+            { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+            { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+            { "<Leader>j", mode = { "n" }, function()
+                require("flash").jump({
+                    search = { mode = "search", forward = true, wrap = false, max_length = 0, multi_window = false },
+                    label = { uppercase = true, after = false, before = { 0, 0 } },
+                    jump = { pos = "after", offset = 1 },
+                    highlight = { style = "inline", backdrop = false, matches = false },
+                    pattern = '^\\s\\+',
+                })
+            end, desc = "Flash jump lines forward" },
+            { "<Leader>k", mode = { "n" }, function()
+                require("flash").jump({
+                    search = { mode = "search", forward = false, wrap = false, max_length = 0, multi_window = false },
+                    label = { uppercase = true, after = false, before = { 0, 0 } },
+                    jump = { pos = "after", offset = 1 },
+                    highlight = { style = "inline", backdrop = false, matches = false },
+                    pattern = '^\\s\\+',
+                })
+            end, desc = "Flash jump lines backward" },
+        },
     },
 }
