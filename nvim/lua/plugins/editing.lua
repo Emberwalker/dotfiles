@@ -185,6 +185,20 @@ return {
             --     return '%2l:%-2v'
             -- end
             
+            -- The plugins in this block duplicate/override/break VSCode functionality/plugins.
+            if not vim.g.vscode then
+                -- Indenticators
+                require('mini.indentscope').setup {
+                    draw = {
+                        -- animation = require('mini.indentscope').gen_animation.linear({ easing = 'out', duration = 10, unit = 'step' }),
+                        animation = require('mini.indentscope').gen_animation.none(),
+                    },
+                }
+
+                -- Show trailing whitespace
+                require('mini.trailspace').setup()
+            end
+            
             -- ... and there is more!
             --  Check out: https://github.com/echasnovski/mini.nvim
         end,
@@ -206,8 +220,6 @@ return {
 
             map('', '/', '<Plug>(easymotion-sn)', { desc = 'EasyMotion incremental search' })
             map('o', '/', '<Plug>(easymotion-sn)', { desc = 'EasyMotion incremental search' })
-            map('', 'n', '<Plug>(easymotion-next)', { desc = 'EasyMotion next match' })
-            map('', 'N', '<Plug>(easymotion-prev)', { desc = 'EasyMotion previous match' })
 
             map('', '<Leader>j', '<Plug>(easymotion-j)', { desc = 'EasyMotion jump lines down' })
             map('', '<Leader>k', '<Plug>(easymotion-k)', { desc = 'EasyMotion jump lines up' })
