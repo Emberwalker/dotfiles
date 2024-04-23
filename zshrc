@@ -10,9 +10,11 @@ if [[ ! -v ZDOTDIR ]]; then
   export ZDOTDIR="$HOME"
 fi
 
+zmodload zsh/zprof
+
 # Helpers
 _cmd_exists() {
-  (( $+commands[$1] ))
+  type -p "$1" >/dev/null
   return $?
 }
 
@@ -22,26 +24,6 @@ _alias_to() {
       alias "$a"="$1"
     fi
   done
-}
-
-# Cache an eval result for 1 day
-_cache_eval() {
-  # Based very loosely on the above compinit loader and the evalcache plugin
-  setopt extendedglob local_options
-  EVALCACHE_DIR="$HOME/.zsh/evalcache"
-  mkdir -p "$EVALCACHE_DIR"
-  local fname="$EVALCACHE_DIR/$1.zsh"
-  local cfname="$fname.zwc"
-  local fragment="$2"
-  local globbed=($fname(N.mh-24))
-  if (( $#globbed )); then
-    source "$fname"
-    { [[ ! -f "$cfname" || "$fname" -nt "$cfname" ]] && rm -f "$cfname" && zcompile "$fname" } &!
-  else
-    echo "$($=fragment)" > "$fname"
-    source "$fname"
-    { rm -f "$cfname" && zcompile "$fname" } &!
-  fi
 }
 
 # Homebrew/Linuxbrew - this is set up early for GPG/Antibody
@@ -79,56 +61,12 @@ else
   echo "warn: unable to locate gpg(2)-agent -- is GPG installed?"
 fi
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/tmp/zsh/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 HISTFILE="$ZDOTDIR/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
 setopt append_history auto_cd extended_glob share_history correct_all auto_list auto_menu always_to_end hist_ignore_space
 unsetopt correct correct_all
 bindkey -e
-
-zstyle ':completion:*' menu select # select completions with arrow keys
-zstyle ':completion:*' group-name '' # group results by category
-zstyle ':completion:::::' completer _expand _complete _ignored _approximate # enable approximate matches for completion
-zstyle :compinstall filename "$ZDOTDIR/.zshrc"
-
-# Before Plugins setup
-
-# Init completion using the cached completions
-# Based loosely on https://gist.github.com/ctechols/ca1035271ad134841284#gistcomment-2894219
-_init_completions_custom() {
-  # Skip completion if non-interactive
-  if [[ -o interactive ]]; then
-    autoload -Uz compinit
-    setopt extendedglob local_options
-    local zcd="$ZDOTDIR/.zcompdump"
-    local zcdc="$zcd.zwc"
-    local globbed=($zcd(N.mh-24))
-    # Compile the completion dump to increase startup speed, if dump is newer or doesn't exist,
-    # in the background as this is doesn't affect the current session
-    if (( $#globbed )); then
-          compinit -C -d "$zcd"
-          { [[ ! -f "$zcdc" || "$zcd" -nt "$zcdc" ]] && rm -f "$zcdc" && zcompile "$zcd" } &!
-    else
-          compinit -i -d "$zcd"
-          { rm -f "$zcdc" && zcompile "$zcd" } &!
-    fi
-    zmodload -i zsh/complist
-  fi
-}
-
-_init_completions_custom
-
-# Homebrew/Linuxbrew
-if _cmd_exists brew; then
-  export HOMEBREW_VERBOSE="true"
-fi
 
 # Arkade
 if [[ -d "$HOME/.arkade/bin" ]]; then
@@ -153,6 +91,16 @@ fi
 # Load Zsh completions
 if [[ -d "$HOME/dotfiles/zsh_completions" ]]; then
   export fpath=($fpath "$HOME/dotfiles/zsh_completions")
+fi
+
+# Python pyenv
+if _cmd_exists pyenv; then
+  _evalcache pyenv init -
+fi
+
+# Ruby rbenv
+if _cmd_exists rbenv; then
+  _evalcache rbenv init - zsh
 fi
 
 # Sensible default env vars
@@ -204,6 +152,28 @@ fi
 # Skip unnecessary bits for interactive shells
 if [[ -o INTERACTIVE ]]; then
 
+  # Setup completion
+  autoload -Uz compinit
+  setopt extendedglob local_options
+  compinit
+  zmodload -i zsh/complist
+
+  zstyle ':completion:*' menu select # select completions with arrow keys
+  zstyle ':completion:*' group-name '' # group results by category
+  zstyle ':completion:::::' completer _expand _complete _ignored _approximate # enable approximate matches for completion
+
+  # Homebrew/Linuxbrew
+  if _cmd_exists brew; then
+    export HOMEBREW_VERBOSE="true"
+  fi
+
+  # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/tmp/zsh/.zshrc.
+  # Initialization code that may require console input (password prompts, [y/n]
+  # confirmations, etc.) must go above this block; everything else may go below.
+  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+  fi
+
   # System banner (if present and populated)
   if [[ -s "$HOME/.banner" ]]; then
     RELEASE=$(lsb_release -ds 2>/dev/null || printf "unknown")
@@ -213,7 +183,7 @@ if [[ -o INTERACTIVE ]]; then
 
   # GitHub CLI
   if _cmd_exists gh; then
-    _cache_eval gh "gh completion -s zsh"
+    _evalcache gh completion -s zsh
     alias prc="gh pr create"
     alias prs="gh pr status"
     alias prv="gh pr view"
@@ -238,9 +208,9 @@ if [[ -o INTERACTIVE ]]; then
 
   # thefuck
   if _cmd_exists thefuck; then
-    eval "$(thefuck --alias)"
-    eval "$(thefuck --alias arse)"
-    eval "$(thefuck --alias shit)"
+    _evalcache thefuck --alias
+    _evalcache thefuck --alias arse
+    _evalcache thefuck --alias shit
   fi
 
   # Aliases
@@ -261,7 +231,7 @@ if [[ -o INTERACTIVE ]]; then
   # Filter out macOS, as that might be confused with the JDK apt tool
   if _cmd_exists apt && [[ "$OSTYPE" != "darwin"* ]]; then alias apt="sudo apt"; fi
   if _cmd_exists pacman; then alias pacman="sudo pacman"; fi
-  if _cmd_exists zoxide; then eval "$(zoxide init zsh)"; fi
+  if _cmd_exists zoxide; then _evalcache zoxide init zsh; fi
   if _cmd_exists exa; then
     alias ls="exa"
     alias la="exa -a"
@@ -281,7 +251,7 @@ if [[ -o INTERACTIVE ]]; then
     alias gco="git checkout"
 
     gppm() {
-      git checkout $(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5) && git pull --prune
+      git checkout $(git symbolic-ref refs/remotes/origin/HEAD --short | cut -f 2 -d /) && git pull --prune
     }
 
     gpo() {

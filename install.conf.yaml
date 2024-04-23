@@ -7,7 +7,6 @@
 - clean: ['~', '~/.config', '~/.virtualenvs']
 
 - link:
-    ~/.antigen.zsh: .antigen.zsh
     ~/.zshrc: zshrc
     ~/.p10k.zsh: p10k.zsh
     ~/.zsh_plugins.txt: zsh_plugins.txt
