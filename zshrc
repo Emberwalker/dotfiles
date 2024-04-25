@@ -70,7 +70,7 @@ bindkey -e
 
 # Arkade
 if [[ -d "$HOME/.arkade/bin" ]]; then
-  export PATH="${HOME}/.krew/bin:${PATH}"
+  export PATH="${HOME}/.arkade/bin:${PATH}"
 fi
 
 # Krew for kubectl
