@@ -46,7 +46,7 @@ set.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
--- set.clipboard = 'unnamedplus'
+set.clipboard = 'unnamedplus'
 
 -- Enable break indent
 set.breakindent = true

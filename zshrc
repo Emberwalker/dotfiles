@@ -10,7 +10,7 @@ if [[ ! -v ZDOTDIR ]]; then
   export ZDOTDIR="$HOME"
 fi
 
-zmodload zsh/zprof
+#zmodload zsh/zprof
 
 # Helpers
 _cmd_exists() {
@@ -155,7 +155,11 @@ if [[ -o INTERACTIVE ]]; then
   # Setup completion
   autoload -Uz compinit
   setopt extendedglob local_options
-  compinit
+  # Only compile compinit once per day
+  for dump in ~/.zcompdump(N.mh+24); do
+    compinit
+  done
+  compinit -C
   zmodload -i zsh/complist
 
   zstyle ':completion:*' menu select # select completions with arrow keys
@@ -321,3 +325,4 @@ fi
 
 # Load asdf
 [[ -d "$HOMEBREW_ROOT" && -f "$HOMEBREW_ROOT/opt/asdf/libexec/asdf.sh" ]] && source "$HOMEBREW_ROOT/opt/asdf/libexec/asdf.sh"
+[[ -f "$HOME/.asdf/plugins/java/set-java-home.zsh" ]] && source "$HOME/.asdf/plugins/java/set-java-home.zsh"

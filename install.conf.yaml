@@ -15,6 +15,9 @@
     ~/.vimrc: vimrc
     ~/.yabairc: yabairc
     ~/.skhdrc: skhdrc
+    ~/.asdfrc: asdfrc
+    ~/.default-python-packages: default-python-packages
+    ~/.default-gems: default-gems
     ~/.gnupg/gpg.conf: gpg.conf
     ~/.gnupg/gpg-agent.conf: gpg-agent.conf
     ~/.virtualenvs/postactivate: virtualenvs/postactivate
