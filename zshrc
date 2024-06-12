@@ -236,10 +236,12 @@ if [[ -o INTERACTIVE ]]; then
   if _cmd_exists apt && [[ "$OSTYPE" != "darwin"* ]]; then alias apt="sudo apt"; fi
   if _cmd_exists pacman; then alias pacman="sudo pacman"; fi
   if _cmd_exists zoxide; then _evalcache zoxide init zsh; fi
-  if _cmd_exists exa; then
-    alias ls="exa"
-    alias la="exa -a"
-    alias ll="exa -la"
+  if _cmd_exists eza; then
+    alias ls="eza"
+    alias la="eza -a"
+    alias ll="eza -la"
+  elif _cmd_exists exa; then
+    echo "!! exa is unmaintained; switch to eza"
   fi
 
   # Git aliases
