@@ -13,8 +13,8 @@
     ~/.config/starship.toml: starship.toml
     ~/.tmux.conf: tmuxrc
     ~/.vimrc: vimrc
-    ~/.yabairc: yabairc
-    ~/.skhdrc: skhdrc
+    # ~/.yabairc: yabairc
+    # ~/.skhdrc: skhdrc
     ~/.asdfrc: asdfrc
     ~/.default-python-packages: default-python-packages
     ~/.default-gems: default-gems
