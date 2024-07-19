@@ -13,10 +13,11 @@
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages = [
-        pkgs.asdf
+        pkgs.asdf-vm
         pkgs.awscli2
         pkgs.bat
         pkgs.cfssl
+        pkgs.delta
         pkgs.difftastic
         pkgs.dyff
         pkgs.eksctl
@@ -25,7 +26,6 @@
         pkgs.fd
         pkgs.fzf
         pkgs.gh
-        pkgs.delta
         pkgs.gnupg
         pkgs.go
         pkgs.go-jsonnet
@@ -37,15 +37,15 @@
         pkgs.graphviz
         pkgs.grpcurl
         # pkgs.hatch
-        pkgs.kubernetes-helm
         pkgs.htop
         pkgs.httpie
         pkgs.istioctl
         pkgs.jq
         pkgs.k9s
         pkgs.krew
-        pkgs.kubectl
         pkgs.kubebuilder
+        pkgs.kubectl
+        pkgs.kubernetes-helm
         pkgs.kustomize
         pkgs.neovim
         pkgs.parallel
@@ -56,10 +56,10 @@
         pkgs.pre-commit
         pkgs.ripgrep
         pkgs.shellcheck
+        pkgs.silver-searcher
         pkgs.skopeo
         pkgs.sonobuoy
         pkgs.steampipe
-        pkgs.silver-searcher
         pkgs.tree-sitter
         pkgs.trivy
         pkgs.vcluster
